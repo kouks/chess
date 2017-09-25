@@ -773,7 +773,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(9);
-module.exports = __webpack_require__(38);
+module.exports = __webpack_require__(42);
 
 
 /***/ }),
@@ -795,7 +795,7 @@ __webpack_require__(10);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('board', __webpack_require__(48));
+Vue.component('board', __webpack_require__(38));
 
 var app = new Vue({
   el: '#app'
@@ -46820,29 +46820,14 @@ module.exports = Vue$3;
 
 /***/ }),
 /* 38 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 39 */,
-/* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */,
-/* 47 */,
-/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(49)
+var normalizeComponent = __webpack_require__(39)
 /* script */
-var __vue_script__ = __webpack_require__(50)
+var __vue_script__ = __webpack_require__(40)
 /* template */
-var __vue_template__ = __webpack_require__(51)
+var __vue_template__ = __webpack_require__(41)
 /* styles */
 var __vue_styles__ = null
 /* scopeId */
@@ -46880,7 +46865,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 49 */
+/* 39 */
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -46977,7 +46962,7 @@ module.exports = function normalizeComponent (
 
 
 /***/ }),
-/* 50 */
+/* 40 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -46990,11 +46975,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['game']
+  props: ['game'],
+
+  mounted: function mounted() {
+    this.waitForPlayer();
+  },
+
+
+  methods: {
+    waitForPlayer: function waitForPlayer() {
+      var _this = this;
+
+      Echo.join('game.' + this.game).joining(function (user) {
+        return _this.startGame(user);
+      });
+    },
+    startGame: function startGame(user) {
+      console.log(user.name);
+    }
+  }
 });
 
 /***/ }),
-/* 51 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47012,6 +47015,12 @@ if (false) {
      require("vue-hot-reload-api").rerender("data-v-421ea1ee", module.exports)
   }
 }
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);
