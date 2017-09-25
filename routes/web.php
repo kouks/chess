@@ -17,3 +17,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/', 'GameController@index')->name('games.index');
     Route::get('/games/{game}', 'GameController@show')->name('games.show');
 });
+
+Route::get('mongo', function (Request $request) {
+    $collection = mongo()->tasks;
+
+    $collection->insertOne([
+        'pavle' => 'pls',
+        5 => 'nevim uš'
+    ]);
+
+    return $collection->find(['pavle' => 'pls'])->toArray();
+});
