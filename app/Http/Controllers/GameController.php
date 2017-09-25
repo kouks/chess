@@ -26,4 +26,18 @@ class GameController extends Controller
     {
         return view('games.show', compact('game'));
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function new()
+    {
+        $game = mongo()->games->insertOne([
+            'white' => auth()->id(),
+        ])->getInsertedId();
+
+        return redirect()->route('games.show', compact('game'));
+    }
 }

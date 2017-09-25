@@ -8,7 +8,7 @@
                 <div class="panel-heading">Dashboard</div>
 
                 <div class="panel-body">
-                    <a href="{{ route('games.show', ['game' => 1]) }}" class="btn btn-primary">New Game</a>
+                    <a href="{{ route('games.new') }}" class="btn btn-primary">New Game</a>
                 </div>
             </div>
         </div>

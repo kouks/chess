@@ -46975,7 +46975,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['game']
+  props: ['game'],
+
+  mounted: function mounted() {
+    this.waitForPlayer();
+  },
+
+
+  methods: {
+    waitForPlayer: function waitForPlayer() {
+      var _this = this;
+
+      Echo.join('game.' + this.game).joining(function (user) {
+        return _this.startGame(user);
+      });
+    },
+    startGame: function startGame(user) {
+      console.log(user.name);
+    }
+  }
 });
 
 /***/ }),

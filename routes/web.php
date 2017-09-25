@@ -15,5 +15,6 @@ Auth::routes();
 
 Route::middleware('auth')->group(function () {
     Route::get('/', 'GameController@index')->name('games.index');
+    Route::get('/games/new', 'GameController@new')->name('games.new');
     Route::get('/games/{game}', 'GameController@show')->name('games.show');
 });
