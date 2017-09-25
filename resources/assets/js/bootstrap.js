@@ -7,11 +7,10 @@ window._ = require('lodash');
  * code may be modified to fit the specific needs of your application.
  */
 
-try {
-    window.$ = window.jQuery = require('jquery');
 
-    require('bootstrap-sass');
-} catch (e) {}
+window.$ = window.jQuery = require('jquery');
+
+require('bootstrap-sass');
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -29,13 +28,11 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
  * a simple convenience so we don't have to attach every token manually.
  */
 
-let token = document.head.querySelector('meta[name="csrf-token"]');
+let csrfToken = document.head.querySelector('meta[name="csrf-token"]');
+let apiToken = document.head.querySelector('meta[name="api-token"]');
 
-if (token) {
-    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
-} else {
-    console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
-}
+window.axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken.content;
+window.axios.defaults.headers.common['Authorization'] = 'Bearer ' + apiToken.content;
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
@@ -43,11 +40,13 @@ if (token) {
  * allows your team to easily build robust real-time web applications.
  */
 
-// import Echo from 'laravel-echo'
+import Echo from 'laravel-echo'
 
-// window.Pusher = require('pusher-js');
+window.Pusher = require('pusher-js');
 
-// window.Echo = new Echo({
-//     broadcaster: 'pusher',
-//     key: 'your-pusher-key'
-// });
+window.Echo = new Echo({
+  broadcaster: 'pusher',
+  key: '2f30eb0eab7933e575c1',
+  cluster: 'eu',
+  encrypted: true
+});
