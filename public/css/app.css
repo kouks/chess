@@ -8350,3 +8350,95 @@ button.close {
   }
 }
 
+.chessboard {
+  width: 490px;
+  margin: 50px auto;
+  border: 5px solid #189c66;
+  overflow: hidden;
+}
+
+.chessboard .file {
+  width: 480px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.chessboard .file .tile {
+  background-color: #f5f8fa;
+}
+
+.chessboard .file .tile:nth-child(odd) {
+  background-color: #189c66;
+}
+
+.chessboard .file:nth-child(odd) .tile {
+  background-color: #189c66;
+}
+
+.chessboard .file:nth-child(odd) .tile:nth-child(odd) {
+  background-color: #f5f8fa;
+}
+
+.chessboard .tile {
+  width: 60px;
+  height: 60px;
+  background-image: url(/img/pieces.png);
+  background-repeat: no-repeat;
+  background-position: 60px 60px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.chessboard .tile.selected {
+  border: 3px solid #3097D1;
+}
+
+.chessboard .tile.black.queen {
+  background-position: 0px 0px;
+}
+
+.chessboard .tile.black.king {
+  background-position: -60px 0px;
+}
+
+.chessboard .tile.black.rook {
+  background-position: -120px 0px;
+}
+
+.chessboard .tile.black.knight {
+  background-position: -180px 0px;
+}
+
+.chessboard .tile.black.bishop {
+  background-position: -240px 0px;
+}
+
+.chessboard .tile.black.pawn {
+  background-position: -300px 0px;
+}
+
+.chessboard .tile.white.queen {
+  background-position: 0px -60px;
+}
+
+.chessboard .tile.white.king {
+  background-position: -60px -60px;
+}
+
+.chessboard .tile.white.rook {
+  background-position: -120px -60px;
+}
+
+.chessboard .tile.white.knight {
+  background-position: -180px -60px;
+}
+
+.chessboard .tile.white.bishop {
+  background-position: -240px -60px;
+}
+
+.chessboard .tile.white.pawn {
+  background-position: -300px -60px;
+}
+

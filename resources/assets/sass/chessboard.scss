@@ -1,0 +1,58 @@
+.chessboard {
+  width: 490px;
+  margin: 50px auto;
+  border: 5px solid $black;
+  overflow: hidden;
+
+  .file {
+    width: 480px;
+    display: flex;
+
+    .tile {
+      background-color: $white;
+      &:nth-child(odd) {
+        background-color: $black;
+      }
+    }
+
+    &:nth-child(odd) {
+      .tile {
+        background-color: $black;
+        &:nth-child(odd) {
+          background-color: $white;
+        }
+      }
+    }
+  }
+
+  .tile {
+    width: 60px;
+    height: 60px;
+    background-image: url(/img/pieces.png);
+    background-repeat: no-repeat;
+    background-position: 60px 60px;
+    box-sizing: border-box;
+
+    &.selected {
+      border: 3px solid $brand-primary;
+    }
+
+    &.black {
+      &.queen  { background-position: 0px 0px; }
+      &.king   { background-position: -60px 0px; }
+      &.rook   { background-position: -120px 0px; }
+      &.knight { background-position: -180px 0px; }
+      &.bishop { background-position: -240px 0px; }
+      &.pawn   { background-position: -300px 0px; }
+    }
+
+    &.white {
+      &.queen  { background-position: 0px -60px; }
+      &.king   { background-position: -60px -60px; }
+      &.rook   { background-position: -120px -60px; }
+      &.knight { background-position: -180px -60px; }
+      &.bishop { background-position: -240px -60px; }
+      &.pawn   { background-position: -300px -60px; }
+    }
+  }
+}
