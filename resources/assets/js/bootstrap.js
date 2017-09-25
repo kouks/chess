@@ -50,3 +50,9 @@ window.Echo = new Echo({
   cluster: 'eu',
   encrypted: true
 });
+
+/**
+ * Initialize the Vue instance.
+ */
+
+window.Vue = require('vue');

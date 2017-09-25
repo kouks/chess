@@ -8,13 +8,7 @@
                 <div class="panel-heading">Dashboard</div>
 
                 <div class="panel-body">
-                    @if (session('status'))
-                        <div class="alert alert-success">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    You are logged in!
+                    <a href="{{ route('games.show', ['game' => 1]) }}" class="btn btn-primary">New Game</a>
                 </div>
             </div>
         </div>
