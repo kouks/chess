@@ -13,6 +13,12 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function () {
-    return auth()->user();
+Route::middleware('auth:api')->group(function () {
+    Route::get('/user', function () {
+        return auth()->user();
+    });
+
+    Route::post('/chess/assignSecondPlayer', 'ChessController@assignSecondPlayer');
+    Route::get('/chess/getPosition/{game}', 'ChessController@getPosition');
+    Route::post('/chess/move', 'ChessController@move');
 });
