@@ -1,5 +1,5 @@
 <template>
-  <div :class="['tile', isSelected]">
+  <div :class="['tile', selectedClass]">
     <div
       :class="['piece', piece]"
       @click="toggleTileOrMove()"
@@ -12,7 +12,7 @@
     props: ['id', 'piece', 'selected', 'side', 'isMyMove'],
 
     computed: {
-      isSelected() {
+      selectedClass() {
         return this.id === this.selected ? 'selected' : ''
       }
     },
@@ -46,7 +46,7 @@
           return
         }
 
-        return this.isSelected === 'selected'
+        return this.selectedClass === 'selected'
           ? this.$emit('selected', null)
           : this.$emit('selected', this.id)
       },

@@ -47103,12 +47103,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
     /**
-     * Makes a move.
+     * Validates a move and eventually makes it.
      */
     move: function move(to) {
       var _this2 = this;
 
       var from = this.selected;
+      var position = this.pieces;
+
+      // if (! Move.valid(from, to, position)) {
+      //   return;
+      // }
 
       axios.post('/api/chess/' + this.game + '/moves', { to: to, from: from }).then(function () {
         _this2.selected = null;
@@ -47231,7 +47236,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   props: ['id', 'piece', 'selected', 'side', 'isMyMove'],
 
   computed: {
-    isSelected: function isSelected() {
+    selectedClass: function selectedClass() {
       return this.id === this.selected ? 'selected' : '';
     }
   },
@@ -47265,7 +47270,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return;
       }
 
-      return this.isSelected === 'selected' ? this.$emit('selected', null) : this.$emit('selected', this.id);
+      return this.selectedClass === 'selected' ? this.$emit('selected', null) : this.$emit('selected', this.id);
     },
 
 
@@ -47297,7 +47302,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { class: ["tile", _vm.isSelected] }, [
+  return _c("div", { class: ["tile", _vm.selectedClass] }, [
     _c("div", {
       class: ["piece", _vm.piece],
       on: {

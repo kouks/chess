@@ -125,10 +125,15 @@
       },
 
       /**
-       * Makes a move.
+       * Validates a move and eventually makes it.
        */
       move(to) {
         let from = this.selected
+        let position = this.pieces
+
+        // if (! Move.valid(from, to, position)) {
+        //   return;
+        // }
 
         axios.post(`/api/chess/${this.game}/moves`, {to, from})
           .then(() => {
