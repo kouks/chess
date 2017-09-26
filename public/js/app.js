@@ -46994,6 +46994,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 
@@ -47011,6 +47014,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       loading: true,
       moves: [],
       ranks: _.range(8),
+      rollback: false,
       selected: null,
       side: '',
       user: {}
@@ -47020,7 +47024,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
   computed: {
     pieces: function pieces() {
-      return __WEBPACK_IMPORTED_MODULE_1__chess_Position__["a" /* default */].calculateFromMoves(this.moves);
+      return __WEBPACK_IMPORTED_MODULE_1__chess_Position__["a" /* default */].calculateFromMoves(this.moves, this.rollback);
     }
   },
 
@@ -47059,6 +47063,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         _this.setMoves(data.game.moves);
 
         _this.isMyMove = !_this.isMyMove;
+
+        _this.rollback = false;
       });
     },
 
@@ -47257,22 +47263,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['list'],
 
-  computed: {
-    couples: function couples() {
-      var couples = {};
-      this.list.map;
-    }
-  },
-
   methods: {
     transform: function transform(tile, piece) {
       return __WEBPACK_IMPORTED_MODULE_0__chess_Move__["a" /* default */].transform(tile, piece);
+    },
+    rollback: function rollback(move) {
+      this.$emit('rollback', move);
     }
   }
 });
@@ -47324,9 +47332,24 @@ var render = function() {
         "div",
         { staticClass: "move-list-item" },
         _vm._l(_vm.list, function(move) {
-          return _c("div", { staticClass: "move" }, [
-            _vm._v(_vm._s(_vm.transform(move.to, move.piece)))
-          ])
+          return _c(
+            "div",
+            {
+              staticClass: "move",
+              on: {
+                click: function($event) {
+                  _vm.rollback(move)
+                }
+              }
+            },
+            [
+              _vm._v(
+                "\n      " +
+                  _vm._s(_vm.transform(move.to, move.piece)) +
+                  "\n    "
+              )
+            ]
+          )
         })
       )
     ]
@@ -47355,16 +47378,22 @@ if (false) {
   /**
    * We calculate the current position from provided moves.
    */
-  calculateFromMoves: function calculateFromMoves(moves) {
+  calculateFromMoves: function calculateFromMoves(moves, rollback) {
     // We do not want to pass by reference.
     var position = $.extend({}, this.default);
 
-    moves.forEach(function (item) {
+    moves.every(function (item) {
       var piece = position[item.from];
 
       delete position[item.from];
 
       position[item.to] = piece;
+
+      if (rollback !== false && rollback === item) {
+        return false;
+      }
+
+      return true;
     });
 
     return position;
@@ -47579,7 +47608,14 @@ var render = function() {
         [_vm._v("Loading")]
       ),
       _vm._v(" "),
-      _c("moves", { attrs: { list: _vm.moves } })
+      _c("moves", {
+        attrs: { list: _vm.moves },
+        on: {
+          rollback: function(val) {
+            _vm.rollback = val
+          }
+        }
+      })
     ],
     2
   )

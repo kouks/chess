@@ -16,7 +16,10 @@
 
     <div class="loading" v-show="loading">Loading</div>
 
-    <moves :list="moves"></moves>
+    <moves
+      :list="moves"
+      @rollback="(val) => { rollback = val }"
+    ></moves>
   </div>
 </template>
 
@@ -37,6 +40,7 @@
         loading: true,
         moves: [],
         ranks: _.range(8),
+        rollback: false,
         selected: null,
         side: '',
         user: {}
@@ -45,7 +49,7 @@
 
     computed: {
       pieces() {
-        return Position.calculateFromMoves(this.moves)
+        return Position.calculateFromMoves(this.moves, this.rollback)
       }
     },
 
@@ -83,6 +87,8 @@
             this.setMoves(data.game.moves)
 
             this.isMyMove = ! this.isMyMove
+
+            this.rollback = false;
           })
       },
 

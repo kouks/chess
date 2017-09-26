@@ -6,16 +6,22 @@ export default {
   /**
    * We calculate the current position from provided moves.
    */
-  calculateFromMoves(moves) {
+  calculateFromMoves(moves, rollback) {
     // We do not want to pass by reference.
     let position = $.extend({}, this.default)
 
-    moves.forEach((item) => {
+    moves.every((item) => {
       let piece = position[item.from]
 
       delete position[item.from]
 
       position[item.to] = piece
+
+      if (rollback !== false && rollback === item) {
+        return false
+      }
+
+      return true
     })
 
     return position
