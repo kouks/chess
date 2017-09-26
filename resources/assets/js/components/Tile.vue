@@ -26,7 +26,7 @@
           return
         }
 
-        return this.selected === null || this.selected === this.id
+        return this.shouldToggleTile()
           ? this.toggleTile()
           : this.move()
       },
@@ -52,10 +52,20 @@
       },
 
       /**
+       * Determines whether to toggle tile by:
+       *  1. If a piece is not selected
+       *  2. If the selected tile is not the same as requested
+       *  3. If I am targetting my own piece
+       */
+      shouldToggleTile() {
+        return this.selected === null || this.selected === this.id || this.selectingMyPiece()
+      },
+
+      /**
        * Decides whether the player is selecting his pieces.
        */
       selectingMyPiece() {
-        return this.piece.startsWith(this.side)
+        return this.piece && this.piece.startsWith(this.side)
       }
     }
   }

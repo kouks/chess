@@ -20,6 +20,7 @@
 
 <script>
   import Tile from './Tile.vue'
+  import Position from '../chess/Position'
 
   export default {
     props: ['game'],
@@ -29,13 +30,19 @@
     data() {
       return {
         files: _.range(8),
-        loading: true,
         isMyMove: false,
-        pieces: {},
+        loading: true,
+        moves: [],
         ranks: _.range(8),
         selected: null,
         side: '',
         user: {}
+      }
+    },
+
+    computed: {
+      pieces() {
+        return Position.calculateFromMoves(this.moves)
       }
     },
 
@@ -44,7 +51,7 @@
 
       this.waitForPlayer()
 
-      this.getPosition()
+      this.loadMoves()
     },
 
     methods: {
@@ -63,9 +70,11 @@
             this.hideLoading()
 
             this.determineSides(data.game)
+
+            this.checkMoveOrder(data.game)
           })
-          .listen('MoveMade', () => {
-            this.getPosition()
+          .listen('MoveMade', (data) => {
+            this.setMoves(data.game.moves)
 
             this.isMyMove = ! this.isMyMove
           })
@@ -75,7 +84,7 @@
        * Assigns the second player to the game as black.
        */
       assignSecondPlayer(player) {
-        axios.post('/api/chess/assignSecondPlayer', {player, game: this.game})
+        axios.post(`/api/chess/${this.game}/assignSecondPlayer`, {player})
       },
 
       /**
@@ -90,8 +99,6 @@
        */
       determineSides(game) {
         if (game.white === this.user.id) {
-          this.isMyMove = true
-
           return this.side = 'white'
         }
 
@@ -99,13 +106,31 @@
       },
 
       /**
+       * Checks whether the given player is on his move.
+       */
+      checkMoveOrder(game) {
+        if ((this.side === 'white' && this.numberOfMoves(game) % 2 === 0)
+          || (this.side === 'black' && this.numberOfMoves(game) % 2 !== 0)) {
+          return this.isMyMove = true
+        }
+
+        return this.isMyMove = false
+      },
+
+      /**
+       * Returns the nubmer of moves in given game.
+       */
+      numberOfMoves(game) {
+        return game.moves ? game.moves.length : 0
+      },
+
+      /**
        * Makes a move.
        */
       move(to) {
         let from = this.selected
-        let game = this.game
 
-        axios.post('/api/chess/move', {game, to, from})
+        axios.post(`/api/chess/${this.game}/moves`, {to, from})
           .then(() => {
             this.selected = null
           })
@@ -126,11 +151,18 @@
       },
 
       /**
-       * Assigns the current position to the pieces variable.
+       * Loads moves from storage.
        */
-      getPosition() {
-        axios.get(`/api/chess/getPosition/${this.game}`)
-          .then(response => this.pieces = response.data)
+      loadMoves() {
+        axios.get(`/api/chess/${this.game}/moves`)
+          .then(response => this.setMoves(response.data))
+      },
+
+      /**
+       * Assigns all current moves to a variable.
+       */
+      setMoves(moves) {
+        this.moves = moves
       },
 
       /**

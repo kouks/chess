@@ -46969,6 +46969,7 @@ module.exports = Component.exports
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Tile_vue__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Tile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Tile_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chess_Position__ = __webpack_require__(55);
 //
 //
 //
@@ -46989,6 +46990,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+
 
 
 
@@ -47000,21 +47002,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   data: function data() {
     return {
       files: _.range(8),
-      loading: true,
       isMyMove: false,
-      pieces: {},
+      loading: true,
+      moves: [],
       ranks: _.range(8),
       selected: null,
       side: '',
       user: {}
     };
   },
+
+
+  computed: {
+    pieces: function pieces() {
+      return __WEBPACK_IMPORTED_MODULE_1__chess_Position__["a" /* default */].calculateFromMoves(this.moves);
+    }
+  },
+
   mounted: function mounted() {
     this.loadUser();
 
     this.waitForPlayer();
 
-    this.getPosition();
+    this.loadMoves();
   },
 
 
@@ -47034,8 +47044,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         _this.hideLoading();
 
         _this.determineSides(data.game);
-      }).listen('MoveMade', function () {
-        _this.getPosition();
+
+        _this.checkMoveOrder(data.game);
+      }).listen('MoveMade', function (data) {
+        _this.setMoves(data.game.moves);
 
         _this.isMyMove = !_this.isMyMove;
       });
@@ -47046,7 +47058,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
      * Assigns the second player to the game as black.
      */
     assignSecondPlayer: function assignSecondPlayer(player) {
-      axios.post('/api/chess/assignSecondPlayer', { player: player, game: this.game });
+      axios.post('/api/chess/' + this.game + '/assignSecondPlayer', { player: player });
     },
 
 
@@ -47063,12 +47075,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
      */
     determineSides: function determineSides(game) {
       if (game.white === this.user.id) {
-        this.isMyMove = true;
-
         return this.side = 'white';
       }
 
       return this.side = 'black';
+    },
+
+
+    /**
+     * Checks whether the given player is on his move.
+     */
+    checkMoveOrder: function checkMoveOrder(game) {
+      if (this.side === 'white' && this.numberOfMoves(game) % 2 === 0 || this.side === 'black' && this.numberOfMoves(game) % 2 !== 0) {
+        return this.isMyMove = true;
+      }
+
+      return this.isMyMove = false;
+    },
+
+
+    /**
+     * Returns the nubmer of moves in given game.
+     */
+    numberOfMoves: function numberOfMoves(game) {
+      return game.moves ? game.moves.length : 0;
     },
 
 
@@ -47079,9 +47109,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       var _this2 = this;
 
       var from = this.selected;
-      var game = this.game;
 
-      axios.post('/api/chess/move', { game: game, to: to, from: from }).then(function () {
+      axios.post('/api/chess/' + this.game + '/moves', { to: to, from: from }).then(function () {
         _this2.selected = null;
       });
     },
@@ -47104,14 +47133,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
     /**
-     * Assigns the current position to the pieces variable.
+     * Loads moves from storage.
      */
-    getPosition: function getPosition() {
+    loadMoves: function loadMoves() {
       var _this3 = this;
 
-      axios.get('/api/chess/getPosition/' + this.game).then(function (response) {
-        return _this3.pieces = response.data;
+      axios.get('/api/chess/' + this.game + '/moves').then(function (response) {
+        return _this3.setMoves(response.data);
       });
+    },
+
+
+    /**
+     * Assigns all current moves to a variable.
+     */
+    setMoves: function setMoves(moves) {
+      this.moves = moves;
     },
 
 
@@ -47208,7 +47245,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return;
       }
 
-      return this.selected === null || this.selected === this.id ? this.toggleTile() : this.move();
+      return this.shouldToggleTile() ? this.toggleTile() : this.move();
     },
 
 
@@ -47233,10 +47270,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
     /**
+     * Determines whether to toggle tile by:
+     *  1. If a piece is not selected
+     *  2. If the selected tile is not the same as requested
+     *  3. If I am targetting my own piece
+     */
+    shouldToggleTile: function shouldToggleTile() {
+      return this.selected === null || this.selected === this.id || this.selectingMyPiece();
+    },
+
+
+    /**
      * Decides whether the player is selecting his pieces.
      */
     selectingMyPiece: function selectingMyPiece() {
-      return this.piece.startsWith(this.side);
+      return this.piece && this.piece.startsWith(this.side);
     }
   }
 });
@@ -47343,6 +47391,44 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+  default: {
+    '00': 'black-rook', '10': 'black-knight', '20': 'black-bishop', '30': 'black-queen', '40': 'black-king', '50': 'black-bishop', '60': 'black-knight', '70': 'black-rook', '01': 'black-pawn', '11': 'black-pawn', '21': 'black-pawn', '31': 'black-pawn', '41': 'black-pawn', '51': 'black-pawn', '61': 'black-pawn', '71': 'black-pawn', '07': 'white-rook', '17': 'white-knight', '27': 'white-bishop', '37': 'white-queen', '47': 'white-king', '57': 'white-bishop', '67': 'white-knight', '77': 'white-rook', '06': 'white-pawn', '16': 'white-pawn', '26': 'white-pawn', '36': 'white-pawn', '46': 'white-pawn', '56': 'white-pawn', '66': 'white-pawn', '76': 'white-pawn'
+  },
+
+  /**
+   * We calculate the current position from provided moves.
+   */
+  calculateFromMoves: function calculateFromMoves(moves) {
+    // We do not want to pass by reference.
+    var position = $.extend({}, this.default);
+
+    moves.forEach(function (item) {
+      var piece = position[item.from];
+
+      delete position[item.from];
+
+      position[item.to] = piece;
+    });
+
+    return position;
+  }
+});
 
 /***/ })
 /******/ ]);

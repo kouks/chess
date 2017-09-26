@@ -20,7 +20,7 @@ class MoveMade implements ShouldBroadcast
      *
      * @var \MongoDB\Model\BSONDocument
      */
-    protected $game;
+    public $game;
 
     /**
      * Create a new event instance.
