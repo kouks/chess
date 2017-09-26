@@ -870,7 +870,7 @@ module.exports = function normalizeComponent (
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(10);
-module.exports = __webpack_require__(45);
+module.exports = __webpack_require__(46);
 
 
 /***/ }),
@@ -46924,7 +46924,7 @@ var normalizeComponent = __webpack_require__(8)
 /* script */
 var __vue_script__ = __webpack_require__(40)
 /* template */
-var __vue_template__ = __webpack_require__(44)
+var __vue_template__ = __webpack_require__(45)
 /* styles */
 var __vue_styles__ = null
 /* scopeId */
@@ -46967,9 +46967,11 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Tile_vue__ = __webpack_require__(41);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Tile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Tile_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chess_Position__ = __webpack_require__(55);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Moves_vue__ = __webpack_require__(56);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Moves_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Moves_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chess_Position__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Tile_vue__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Tile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Tile_vue__);
 //
 //
 //
@@ -46990,6 +46992,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+
 
 
 
@@ -46997,7 +47002,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['game'],
 
-  components: { Tile: __WEBPACK_IMPORTED_MODULE_0__Tile_vue___default.a },
+  components: { Tile: __WEBPACK_IMPORTED_MODULE_2__Tile_vue___default.a, Moves: __WEBPACK_IMPORTED_MODULE_0__Moves_vue___default.a },
 
   data: function data() {
     return {
@@ -47110,12 +47115,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
       var from = this.selected;
       var position = this.pieces;
+      var piece = this.pieces[from];
 
+      // need to determine if it would be a taking move/check/checkmate
       // if (! Move.valid(from, to, position)) {
       //   return;
       // }
 
-      axios.post('/api/chess/' + this.game + '/moves', { to: to, from: from }).then(function () {
+      axios.post('/api/chess/' + this.game + '/moves', { to: to, from: from, piece: piece }).then(function () {
         _this2.selected = null;
       });
     },
@@ -47325,6 +47332,35 @@ if (false) {
 
 /***/ }),
 /* 44 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+  default: {
+    '00': 'black-rook', '10': 'black-knight', '20': 'black-bishop', '30': 'black-queen', '40': 'black-king', '50': 'black-bishop', '60': 'black-knight', '70': 'black-rook', '01': 'black-pawn', '11': 'black-pawn', '21': 'black-pawn', '31': 'black-pawn', '41': 'black-pawn', '51': 'black-pawn', '61': 'black-pawn', '71': 'black-pawn', '07': 'white-rook', '17': 'white-knight', '27': 'white-bishop', '37': 'white-queen', '47': 'white-king', '57': 'white-bishop', '67': 'white-knight', '77': 'white-rook', '06': 'white-pawn', '16': 'white-pawn', '26': 'white-pawn', '36': 'white-pawn', '46': 'white-pawn', '56': 'white-pawn', '66': 'white-pawn', '76': 'white-pawn'
+  },
+
+  /**
+   * We calculate the current position from provided moves.
+   */
+  calculateFromMoves: function calculateFromMoves(moves) {
+    // We do not want to pass by reference.
+    var position = $.extend({}, this.default);
+
+    moves.forEach(function (item) {
+      var piece = position[item.from];
+
+      delete position[item.from];
+
+      position[item.to] = piece;
+    });
+
+    return position;
+  }
+});
+
+/***/ }),
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47376,7 +47412,9 @@ var render = function() {
           staticClass: "loading"
         },
         [_vm._v("Loading")]
-      )
+      ),
+      _vm._v(" "),
+      _c("moves", { attrs: { list: _vm.moves } })
     ],
     2
   )
@@ -47392,13 +47430,12 @@ if (false) {
 }
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 46 */,
 /* 47 */,
 /* 48 */,
 /* 49 */,
@@ -47407,31 +47444,149 @@ if (false) {
 /* 52 */,
 /* 53 */,
 /* 54 */,
-/* 55 */
+/* 55 */,
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(8)
+/* script */
+var __vue_script__ = __webpack_require__(57)
+/* template */
+var __vue_template__ = __webpack_require__(58)
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/Moves.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] Moves.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-3ad2b86c", Component.options)
+  } else {
+    hotAPI.reload("data-v-3ad2b86c", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 57 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__chess_Move__ = __webpack_require__(59);
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['list'],
+
+  computed: {
+    couples: function couples() {
+      var couples = {};
+      this.list.map;
+    }
+  },
+
+  methods: {
+    transform: function transform(tile, piece) {
+      return __WEBPACK_IMPORTED_MODULE_0__chess_Move__["a" /* default */].transform(tile, piece);
+    }
+  }
+});
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      directives: [
+        {
+          name: "show",
+          rawName: "v-show",
+          value: _vm.list.length,
+          expression: "list.length"
+        }
+      ],
+      staticClass: "move-list"
+    },
+    [
+      _c(
+        "div",
+        { staticClass: "move-list-item" },
+        _vm._l(_vm.list, function(move) {
+          return _c("div", { staticClass: "move" }, [
+            _vm._v(_vm._s(_vm.transform(move.to, move.piece)))
+          ])
+        })
+      )
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-3ad2b86c", module.exports)
+  }
+}
+
+/***/ }),
+/* 59 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony default export */ __webpack_exports__["a"] = ({
-  default: {
-    '00': 'black-rook', '10': 'black-knight', '20': 'black-bishop', '30': 'black-queen', '40': 'black-king', '50': 'black-bishop', '60': 'black-knight', '70': 'black-rook', '01': 'black-pawn', '11': 'black-pawn', '21': 'black-pawn', '31': 'black-pawn', '41': 'black-pawn', '51': 'black-pawn', '61': 'black-pawn', '71': 'black-pawn', '07': 'white-rook', '17': 'white-knight', '27': 'white-bishop', '37': 'white-queen', '47': 'white-king', '57': 'white-bishop', '67': 'white-knight', '77': 'white-rook', '06': 'white-pawn', '16': 'white-pawn', '26': 'white-pawn', '36': 'white-pawn', '46': 'white-pawn', '56': 'white-pawn', '66': 'white-pawn', '76': 'white-pawn'
+  positionTransformers: {
+    '00': 'a8', '10': 'b8', '20': 'c8', '30': 'd8', '40': 'e8', '50': 'f8', '60': 'g8', '70': 'h8', '01': 'a7', '11': 'b7', '21': 'c7', '31': 'd7', '41': 'e7', '51': 'f7', '61': 'g7', '71': 'h7', '02': 'a6', '12': 'b6', '22': 'c6', '32': 'd6', '42': 'e6', '52': 'f6', '62': 'g6', '72': 'h6', '03': 'a5', '13': 'b5', '23': 'c5', '33': 'd5', '43': 'e5', '53': 'f5', '63': 'g5', '73': 'h5', '04': 'a4', '14': 'b4', '24': 'c4', '34': 'd4', '44': 'e4', '54': 'f4', '64': 'g4', '74': 'h4', '05': 'a3', '15': 'b3', '25': 'c3', '35': 'd3', '45': 'e3', '55': 'f3', '65': 'g3', '75': 'h3', '06': 'a2', '16': 'b2', '26': 'c2', '36': 'd2', '46': 'e2', '56': 'f2', '66': 'g2', '76': 'h2', '07': 'a1', '17': 'b1', '27': 'c1', '37': 'd1', '47': 'e1', '57': 'f1', '67': 'g1', '77': 'h1'
   },
 
-  /**
-   * We calculate the current position from provided moves.
-   */
-  calculateFromMoves: function calculateFromMoves(moves) {
-    // We do not want to pass by reference.
-    var position = $.extend({}, this.default);
+  pieceTransformers: {
+    'pawn': '', 'rook': 'R', 'bishop': 'B', 'knight': 'N', 'queen': 'Q', 'king': 'K'
+  },
 
-    moves.forEach(function (item) {
-      var piece = position[item.from];
+  transform: function transform(tile, piece) {
+    piece = piece.replace('white-', '').replace('black-', '');
 
-      delete position[item.from];
-
-      position[item.to] = piece;
-    });
-
-    return position;
+    return this.pieceTransformers[piece] + this.positionTransformers[tile];
   }
 });
 

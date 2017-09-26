@@ -2,7 +2,7 @@
   width: 570px;
   margin: 50px auto;
   border: 5px solid $black;
-  overflow: hidden;
+  position: relative;
 
   .rank {
     width: 560px;
@@ -58,6 +58,41 @@
         &-knight { background-position: -180px -60px; }
         &-bishop { background-position: -240px -60px; }
         &-pawn   { background-position: -300px -60px; }
+      }
+    }
+  }
+
+  .move-list {
+    position: absolute;
+    top: -5px;
+    left: 580px;
+    width: 200px;
+    border: 5px solid $black;
+    counter-reset: moves;
+
+    .move-list-item {
+      padding-left: 20px;
+
+      .move {
+        padding: 7px;
+        width: 50%;
+        float: left;
+        cursor: pointer;
+        position: relative;
+
+        &:nth-child(odd):before {
+          counter-increment: moves;
+          content: counter(moves) ".";
+          font-weight: bold;
+          position: absolute;
+          padding: 7px;
+          top: 0;
+          left: -20px;
+        }
+
+        &:hover {
+          background: white;
+        }
       }
     }
   }

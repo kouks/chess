@@ -8354,7 +8354,7 @@ button.close {
   width: 570px;
   margin: 50px auto;
   border: 5px solid #189c66;
-  overflow: hidden;
+  position: relative;
 }
 
 .chessboard .rank {
@@ -8445,5 +8445,40 @@ button.close {
 
 .chessboard .tile .piece.white-pawn {
   background-position: -300px -60px;
+}
+
+.chessboard .move-list {
+  position: absolute;
+  top: -5px;
+  left: 580px;
+  width: 200px;
+  border: 5px solid #189c66;
+  counter-reset: moves;
+}
+
+.chessboard .move-list .move-list-item {
+  padding-left: 20px;
+}
+
+.chessboard .move-list .move-list-item .move {
+  padding: 7px;
+  width: 50%;
+  float: left;
+  cursor: pointer;
+  position: relative;
+}
+
+.chessboard .move-list .move-list-item .move:nth-child(odd):before {
+  counter-increment: moves;
+  content: counter(moves) ".";
+  font-weight: bold;
+  position: absolute;
+  padding: 7px;
+  top: 0;
+  left: -20px;
+}
+
+.chessboard .move-list .move-list-item .move:hover {
+  background: white;
 }
 

@@ -15,17 +15,20 @@
     </div>
 
     <div class="loading" v-show="loading">Loading</div>
+
+    <moves :list="moves"></moves>
   </div>
 </template>
 
 <script>
-  import Tile from './Tile.vue'
+  import Moves from './Moves.vue'
   import Position from '../chess/Position'
+  import Tile from './Tile.vue'
 
   export default {
     props: ['game'],
 
-    components: {Tile},
+    components: {Tile, Moves},
 
     data() {
       return {
@@ -130,12 +133,14 @@
       move(to) {
         let from = this.selected
         let position = this.pieces
+        let piece = this.pieces[from]
 
+        // need to determine if it would be a taking move/check/checkmate
         // if (! Move.valid(from, to, position)) {
         //   return;
         // }
 
-        axios.post(`/api/chess/${this.game}/moves`, {to, from})
+        axios.post(`/api/chess/${this.game}/moves`, {to, from, piece})
           .then(() => {
             this.selected = null
           })

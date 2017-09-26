@@ -44,7 +44,8 @@ class MovesController extends Controller
                 'moves' => [
                     'from' => $request->from,
                     'to' => $request->to,
-                ]
+                    'piece' => $request->piece,
+                ],
             ],
         ]);
 
