@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Game;
 use MongoDB\BSON\ObjectID;
 use App\Events\PlayerJoined;
 use Illuminate\Http\Request;
