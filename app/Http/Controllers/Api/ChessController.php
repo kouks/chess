@@ -4,12 +4,16 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Game;
 use MongoDB\BSON\ObjectID;
+use App\Events\PlayerJoined;
 use Illuminate\Http\Request;
-use App\Events\PlayerAssigned;
+use MongoDB\Model\BSONDocument;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\Concerns\FetchesGame;
 
 class ChessController extends Controller
 {
+    use FetchesGame;
+
     /**
      * Assings a second player to the game.
      *
@@ -17,28 +21,50 @@ class ChessController extends Controller
      * @param  string  $gameId
      * @return \Illuminate\Http\Response
      */
-    public function assignSecondPlayer(Request $request, $gameId)
+    public function joinRoom(Request $request, $gameId)
     {
-        $game = mongo()->games->findOne([
-            '_id' => new ObjectID($gameId),
-        ]);
+        $game = $this->getGameById($gameId);
 
-        event(new PlayerAssigned($game));
-
-        if (isset($game['black'])) {
-            return response('Player already assigned', 200);
+        if (! $this->alreadyInRoom($request->user['id'], $game)) {
+            mongo()->games->updateOne([
+                '_id' => new ObjectID($gameId),
+            ], $this->buildAmendment($game, $request));
         }
 
-        mongo()->games->updateOne([
-            '_id' => new ObjectID($gameId),
-        ], [
-            '$set' => ['black' => $request->player['id'] ],
-        ]);
+        event(new PlayerJoined($this->getGameById($gameId)));
 
-        $game = mongo()->games->findOne([
-            '_id' => new ObjectID($gameId),
-        ]);
+        return response('Player joined.', 202);
+    }
 
-        return response('Player assigned.', 202);
+    /**
+     * Builds the update query for a game.
+     *
+     * @param  \MongoDB\Model\BSONDocument  $game
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function buildAmendment(BSONDocument $game, Request $request)
+    {
+        if ($game['black'] !== false) {
+            return [
+                '$push' => ['spectators' => $request->user['id'] ],
+            ];
+        }
+
+        return [
+            '$set' => ['black' => $request->user['id'] ],
+        ];
+    }
+
+    /**
+     * Determines whether a given user is already in room.
+     *
+     * @param  int  $id
+     * @param  \MongoDB\Model\BSONDocument  $game
+     * @return bool
+     */
+    public function alreadyInRoom($id, BSONDocument $game)
+    {
+        return in_array($id, [$game['white'], $game['black']]) || in_array($id, (array) $game['spectators']);
     }
 }

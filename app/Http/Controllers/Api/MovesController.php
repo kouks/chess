@@ -6,9 +6,12 @@ use App\Events\MoveMade;
 use MongoDB\BSON\ObjectID;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\Concerns\FetchesGame;
 
 class MovesController extends Controller
 {
+    use FetchesGame;
+
     /**
      * Display a listing of the resource.
      *
@@ -17,13 +20,7 @@ class MovesController extends Controller
      */
     public function index($gameId)
     {
-        $game = mongo()->games->findOne([
-            '_id' => new ObjectID($gameId),
-        ]);
-
-        if (! isset($game['moves'])) {
-            return response([], 200);
-        }
+        $game = $this->getGameById($gameId);
 
         return response($game['moves'], 200);
     }
@@ -41,17 +38,11 @@ class MovesController extends Controller
             '_id' => new ObjectID($gameId),
         ], [
             '$push' => [
-                'moves' => [
-                    'from' => $request->from,
-                    'to' => $request->to,
-                    'piece' => $request->piece,
-                ],
+                'moves' => $request->only('from', 'to', 'piece'),
             ],
         ]);
 
-        $game = mongo()->games->findOne([
-            '_id' => new ObjectID($gameId),
-        ]);
+        $game = $this->getGameById($gameId);
 
         event(new MoveMade($game));
 

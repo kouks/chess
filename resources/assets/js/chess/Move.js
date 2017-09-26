@@ -8,8 +8,8 @@ export default {
   },
 
   transform(tile, piece) {
-    piece = piece.replace('white-', '').replace('black-', '');
+    piece = piece.replace('white-', '').replace('black-', '')
 
-    return this.pieceTransformers[piece] + this.positionTransformers[tile];
+    return this.pieceTransformers[piece] + this.positionTransformers[tile]
   }
 }

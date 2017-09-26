@@ -36,6 +36,9 @@ class GameController extends Controller
     {
         $game = mongo()->games->insertOne([
             'white' => auth()->id(),
+            'black' => false,
+            'spectators' => [],
+            'moves' => [],
         ])->getInsertedId();
 
         return redirect()->route('games.show', compact('game'));

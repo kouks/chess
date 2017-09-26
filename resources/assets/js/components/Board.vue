@@ -66,13 +66,16 @@
        */
       waitForPlayer() {
         Echo.join(`game.${this.game}`)
-          .joining((player) => {
-            this.assignSecondPlayer(player)
+          .joining((user) => {
+            this.joinRoom(user)
           })
-          .listen('PlayerAssigned', (data) => {
+          // .leaving((user) => { TODO
+          //   this.leaveRoom(user)
+          // })
+          .listen('PlayerJoined', (data) => {
             this.hideLoading()
 
-            this.determineSides(data.game)
+            this.determineRoles(data.game)
 
             this.checkMoveOrder(data.game)
           })
@@ -86,8 +89,8 @@
       /**
        * Assigns the second player to the game as black.
        */
-      assignSecondPlayer(player) {
-        axios.post(`/api/chess/${this.game}/assignSecondPlayer`, {player})
+      joinRoom(user) {
+        axios.post(`/api/chess/${this.game}/joinRoom`, {user})
       },
 
       /**
@@ -100,12 +103,26 @@
       /**
        * Determines which player play which side by user IDs.
        */
-      determineSides(game) {
+      determineRoles(game) {
         if (game.white === this.user.id) {
           return this.side = 'white'
         }
 
-        return this.side = 'black'
+        if (game.black === this.user.id) {
+          this.reverseBoard();
+
+          return this.side = 'black'
+        }
+
+        this.side = 'spectator'
+      },
+
+      /**
+       * Reverses the board for the player playing black pieces.
+       */
+      reverseBoard() {
+        this.files = _.reverse(this.files);
+        this.ranks = _.reverse(this.ranks);
       },
 
       /**
@@ -137,7 +154,7 @@
 
         // need to determine if it would be a taking move/check/checkmate
         // if (! Move.valid(from, to, position)) {
-        //   return;
+        //   return
         // }
 
         axios.post(`/api/chess/${this.game}/moves`, {to, from, piece})

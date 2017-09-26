@@ -70,7 +70,7 @@
 "use strict";
 
 
-var bind = __webpack_require__(3);
+var bind = __webpack_require__(4);
 var isBuffer = __webpack_require__(18);
 
 /*global toString:true*/
@@ -397,10 +397,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(4);
+    adapter = __webpack_require__(5);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(4);
+    adapter = __webpack_require__(5);
   }
   return adapter;
 }
@@ -477,6 +477,103 @@ module.exports = defaults;
 /* 2 */
 /***/ (function(module, exports) {
 
+/* globals __VUE_SSR_CONTEXT__ */
+
+// this module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
 var g;
 
 // This works in non-strict mode
@@ -501,7 +598,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -519,7 +616,7 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -530,7 +627,7 @@ var settle = __webpack_require__(22);
 var buildURL = __webpack_require__(24);
 var parseHeaders = __webpack_require__(25);
 var isURLSameOrigin = __webpack_require__(26);
-var createError = __webpack_require__(5);
+var createError = __webpack_require__(6);
 var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(27);
 
 module.exports = function xhrAdapter(config) {
@@ -706,7 +803,7 @@ module.exports = function xhrAdapter(config) {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -731,7 +828,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -743,7 +840,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -769,108 +866,11 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// this module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
-
-/***/ }),
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(10);
-module.exports = __webpack_require__(46);
+module.exports = __webpack_require__(50);
 
 
 /***/ }),
@@ -18054,7 +18054,7 @@ window.Vue = __webpack_require__(38);
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(13)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(13)(module)))
 
 /***/ }),
 /* 13 */
@@ -30741,7 +30741,7 @@ module.exports = __webpack_require__(17);
 
 
 var utils = __webpack_require__(0);
-var bind = __webpack_require__(3);
+var bind = __webpack_require__(4);
 var Axios = __webpack_require__(19);
 var defaults = __webpack_require__(1);
 
@@ -30776,9 +30776,9 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(7);
+axios.Cancel = __webpack_require__(8);
 axios.CancelToken = __webpack_require__(34);
-axios.isCancel = __webpack_require__(6);
+axios.isCancel = __webpack_require__(7);
 
 // Expose all/spread
 axios.all = function all(promises) {
@@ -31128,7 +31128,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 "use strict";
 
 
-var createError = __webpack_require__(5);
+var createError = __webpack_require__(6);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -31547,7 +31547,7 @@ module.exports = InterceptorManager;
 
 var utils = __webpack_require__(0);
 var transformData = __webpack_require__(31);
-var isCancel = __webpack_require__(6);
+var isCancel = __webpack_require__(7);
 var defaults = __webpack_require__(1);
 
 /**
@@ -31700,7 +31700,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 "use strict";
 
 
-var Cancel = __webpack_require__(7);
+var Cancel = __webpack_require__(8);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -46913,18 +46913,18 @@ Vue$3.compile = compileToFunctions;
 
 module.exports = Vue$3;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
 /* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(40)
 /* template */
-var __vue_template__ = __webpack_require__(45)
+var __vue_template__ = __webpack_require__(49)
 /* styles */
 var __vue_styles__ = null
 /* scopeId */
@@ -46967,10 +46967,10 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Moves_vue__ = __webpack_require__(56);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Moves_vue__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Moves_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Moves_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chess_Position__ = __webpack_require__(44);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Tile_vue__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chess_Position__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Tile_vue__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Tile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Tile_vue__);
 //
 //
@@ -47043,12 +47043,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     waitForPlayer: function waitForPlayer() {
       var _this = this;
 
-      Echo.join('game.' + this.game).joining(function (player) {
-        _this.assignSecondPlayer(player);
-      }).listen('PlayerAssigned', function (data) {
+      Echo.join('game.' + this.game).joining(function (user) {
+        _this.joinRoom(user);
+      })
+      // .leaving((user) => { TODO
+      //   this.leaveRoom(user)
+      // })
+      .listen('PlayerJoined', function (data) {
         _this.hideLoading();
 
-        _this.determineSides(data.game);
+        _this.determineRoles(data.game);
 
         _this.checkMoveOrder(data.game);
       }).listen('MoveMade', function (data) {
@@ -47062,8 +47066,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     /**
      * Assigns the second player to the game as black.
      */
-    assignSecondPlayer: function assignSecondPlayer(player) {
-      axios.post('/api/chess/' + this.game + '/assignSecondPlayer', { player: player });
+    joinRoom: function joinRoom(user) {
+      axios.post('/api/chess/' + this.game + '/joinRoom', { user: user });
     },
 
 
@@ -47078,12 +47082,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     /**
      * Determines which player play which side by user IDs.
      */
-    determineSides: function determineSides(game) {
+    determineRoles: function determineRoles(game) {
       if (game.white === this.user.id) {
         return this.side = 'white';
       }
 
-      return this.side = 'black';
+      if (game.black === this.user.id) {
+        this.reverseBoard();
+
+        return this.side = 'black';
+      }
+
+      this.side = 'spectator';
+    },
+
+
+    /**
+     * Reverses the board for the player playing black pieces.
+     */
+    reverseBoard: function reverseBoard() {
+      this.files = _.reverse(this.files);
+      this.ranks = _.reverse(this.ranks);
     },
 
 
@@ -47119,7 +47138,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
       // need to determine if it would be a taking move/check/checkmate
       // if (! Move.valid(from, to, position)) {
-      //   return;
+      //   return
       // }
 
       axios.post('/api/chess/' + this.game + '/moves', { to: to, from: from, piece: piece }).then(function () {
@@ -47182,11 +47201,186 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(42)
 /* template */
-var __vue_template__ = __webpack_require__(43)
+var __vue_template__ = __webpack_require__(44)
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/Moves.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] Moves.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-3ad2b86c", Component.options)
+  } else {
+    hotAPI.reload("data-v-3ad2b86c", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 42 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__chess_Move__ = __webpack_require__(43);
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['list'],
+
+  computed: {
+    couples: function couples() {
+      var couples = {};
+      this.list.map;
+    }
+  },
+
+  methods: {
+    transform: function transform(tile, piece) {
+      return __WEBPACK_IMPORTED_MODULE_0__chess_Move__["a" /* default */].transform(tile, piece);
+    }
+  }
+});
+
+/***/ }),
+/* 43 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+  positionTransformers: {
+    '00': 'a8', '10': 'b8', '20': 'c8', '30': 'd8', '40': 'e8', '50': 'f8', '60': 'g8', '70': 'h8', '01': 'a7', '11': 'b7', '21': 'c7', '31': 'd7', '41': 'e7', '51': 'f7', '61': 'g7', '71': 'h7', '02': 'a6', '12': 'b6', '22': 'c6', '32': 'd6', '42': 'e6', '52': 'f6', '62': 'g6', '72': 'h6', '03': 'a5', '13': 'b5', '23': 'c5', '33': 'd5', '43': 'e5', '53': 'f5', '63': 'g5', '73': 'h5', '04': 'a4', '14': 'b4', '24': 'c4', '34': 'd4', '44': 'e4', '54': 'f4', '64': 'g4', '74': 'h4', '05': 'a3', '15': 'b3', '25': 'c3', '35': 'd3', '45': 'e3', '55': 'f3', '65': 'g3', '75': 'h3', '06': 'a2', '16': 'b2', '26': 'c2', '36': 'd2', '46': 'e2', '56': 'f2', '66': 'g2', '76': 'h2', '07': 'a1', '17': 'b1', '27': 'c1', '37': 'd1', '47': 'e1', '57': 'f1', '67': 'g1', '77': 'h1'
+  },
+
+  pieceTransformers: {
+    'pawn': '', 'rook': 'R', 'bishop': 'B', 'knight': 'N', 'queen': 'Q', 'king': 'K'
+  },
+
+  transform: function transform(tile, piece) {
+    piece = piece.replace('white-', '').replace('black-', '');
+
+    return this.pieceTransformers[piece] + this.positionTransformers[tile];
+  }
+});
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      directives: [
+        {
+          name: "show",
+          rawName: "v-show",
+          value: _vm.list.length,
+          expression: "list.length"
+        }
+      ],
+      staticClass: "move-list"
+    },
+    [
+      _c(
+        "div",
+        { staticClass: "move-list-item" },
+        _vm._l(_vm.list, function(move) {
+          return _c("div", { staticClass: "move" }, [
+            _vm._v(_vm._s(_vm.transform(move.to, move.piece)))
+          ])
+        })
+      )
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-3ad2b86c", module.exports)
+  }
+}
+
+/***/ }),
+/* 45 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+  default: {
+    '00': 'black-rook', '10': 'black-knight', '20': 'black-bishop', '30': 'black-queen', '40': 'black-king', '50': 'black-bishop', '60': 'black-knight', '70': 'black-rook', '01': 'black-pawn', '11': 'black-pawn', '21': 'black-pawn', '31': 'black-pawn', '41': 'black-pawn', '51': 'black-pawn', '61': 'black-pawn', '71': 'black-pawn', '07': 'white-rook', '17': 'white-knight', '27': 'white-bishop', '37': 'white-queen', '47': 'white-king', '57': 'white-bishop', '67': 'white-knight', '77': 'white-rook', '06': 'white-pawn', '16': 'white-pawn', '26': 'white-pawn', '36': 'white-pawn', '46': 'white-pawn', '56': 'white-pawn', '66': 'white-pawn', '76': 'white-pawn'
+  },
+
+  /**
+   * We calculate the current position from provided moves.
+   */
+  calculateFromMoves: function calculateFromMoves(moves) {
+    // We do not want to pass by reference.
+    var position = $.extend({}, this.default);
+
+    moves.forEach(function (item) {
+      var piece = position[item.from];
+
+      delete position[item.from];
+
+      position[item.to] = piece;
+    });
+
+    return position;
+  }
+});
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(2)
+/* script */
+var __vue_script__ = __webpack_require__(47)
+/* template */
+var __vue_template__ = __webpack_require__(48)
 /* styles */
 var __vue_styles__ = null
 /* scopeId */
@@ -47224,7 +47418,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 42 */
+/* 47 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47302,7 +47496,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 43 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47331,36 +47525,7 @@ if (false) {
 }
 
 /***/ }),
-/* 44 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
-  default: {
-    '00': 'black-rook', '10': 'black-knight', '20': 'black-bishop', '30': 'black-queen', '40': 'black-king', '50': 'black-bishop', '60': 'black-knight', '70': 'black-rook', '01': 'black-pawn', '11': 'black-pawn', '21': 'black-pawn', '31': 'black-pawn', '41': 'black-pawn', '51': 'black-pawn', '61': 'black-pawn', '71': 'black-pawn', '07': 'white-rook', '17': 'white-knight', '27': 'white-bishop', '37': 'white-queen', '47': 'white-king', '57': 'white-bishop', '67': 'white-knight', '77': 'white-rook', '06': 'white-pawn', '16': 'white-pawn', '26': 'white-pawn', '36': 'white-pawn', '46': 'white-pawn', '56': 'white-pawn', '66': 'white-pawn', '76': 'white-pawn'
-  },
-
-  /**
-   * We calculate the current position from provided moves.
-   */
-  calculateFromMoves: function calculateFromMoves(moves) {
-    // We do not want to pass by reference.
-    var position = $.extend({}, this.default);
-
-    moves.forEach(function (item) {
-      var piece = position[item.from];
-
-      delete position[item.from];
-
-      position[item.to] = piece;
-    });
-
-    return position;
-  }
-});
-
-/***/ }),
-/* 45 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47430,165 +47595,10 @@ if (false) {
 }
 
 /***/ }),
-/* 46 */
+/* 50 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 47 */,
-/* 48 */,
-/* 49 */,
-/* 50 */,
-/* 51 */,
-/* 52 */,
-/* 53 */,
-/* 54 */,
-/* 55 */,
-/* 56 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(8)
-/* script */
-var __vue_script__ = __webpack_require__(57)
-/* template */
-var __vue_template__ = __webpack_require__(58)
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/Moves.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] Moves.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-3ad2b86c", Component.options)
-  } else {
-    hotAPI.reload("data-v-3ad2b86c", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 57 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__chess_Move__ = __webpack_require__(59);
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['list'],
-
-  computed: {
-    couples: function couples() {
-      var couples = {};
-      this.list.map;
-    }
-  },
-
-  methods: {
-    transform: function transform(tile, piece) {
-      return __WEBPACK_IMPORTED_MODULE_0__chess_Move__["a" /* default */].transform(tile, piece);
-    }
-  }
-});
-
-/***/ }),
-/* 58 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      directives: [
-        {
-          name: "show",
-          rawName: "v-show",
-          value: _vm.list.length,
-          expression: "list.length"
-        }
-      ],
-      staticClass: "move-list"
-    },
-    [
-      _c(
-        "div",
-        { staticClass: "move-list-item" },
-        _vm._l(_vm.list, function(move) {
-          return _c("div", { staticClass: "move" }, [
-            _vm._v(_vm._s(_vm.transform(move.to, move.piece)))
-          ])
-        })
-      )
-    ]
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-3ad2b86c", module.exports)
-  }
-}
-
-/***/ }),
-/* 59 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
-  positionTransformers: {
-    '00': 'a8', '10': 'b8', '20': 'c8', '30': 'd8', '40': 'e8', '50': 'f8', '60': 'g8', '70': 'h8', '01': 'a7', '11': 'b7', '21': 'c7', '31': 'd7', '41': 'e7', '51': 'f7', '61': 'g7', '71': 'h7', '02': 'a6', '12': 'b6', '22': 'c6', '32': 'd6', '42': 'e6', '52': 'f6', '62': 'g6', '72': 'h6', '03': 'a5', '13': 'b5', '23': 'c5', '33': 'd5', '43': 'e5', '53': 'f5', '63': 'g5', '73': 'h5', '04': 'a4', '14': 'b4', '24': 'c4', '34': 'd4', '44': 'e4', '54': 'f4', '64': 'g4', '74': 'h4', '05': 'a3', '15': 'b3', '25': 'c3', '35': 'd3', '45': 'e3', '55': 'f3', '65': 'g3', '75': 'h3', '06': 'a2', '16': 'b2', '26': 'c2', '36': 'd2', '46': 'e2', '56': 'f2', '66': 'g2', '76': 'h2', '07': 'a1', '17': 'b1', '27': 'c1', '37': 'd1', '47': 'e1', '57': 'f1', '67': 'g1', '77': 'h1'
-  },
-
-  pieceTransformers: {
-    'pawn': '', 'rook': 'R', 'bishop': 'B', 'knight': 'N', 'queen': 'Q', 'king': 'K'
-  },
-
-  transform: function transform(tile, piece) {
-    piece = piece.replace('white-', '').replace('black-', '');
-
-    return this.pieceTransformers[piece] + this.positionTransformers[tile];
-  }
-});
 
 /***/ })
 /******/ ]);

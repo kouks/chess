@@ -18,7 +18,7 @@ Route::middleware('auth:api')->group(function () {
         return auth()->user();
     });
 
-    Route::post('/chess/{gameId}/assignSecondPlayer', 'ChessController@assignSecondPlayer');
+    Route::post('/chess/{gameId}/joinRoom', 'ChessController@joinRoom');
 
     Route::get('/chess/{gameId}/moves', 'MovesController@index');
     Route::post('/chess/{gameId}/moves', 'MovesController@store');
