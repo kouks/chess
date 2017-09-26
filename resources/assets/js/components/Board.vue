@@ -23,6 +23,7 @@
 
   export default {
     props: ['game'],
+
     components: {Tile},
 
     data() {
@@ -47,9 +48,17 @@
     },
 
     methods: {
+      /**
+       * Join the presence channel and listen for events:
+       *  1. Player joined the room event
+       *  2. Players have been assigned sides event
+       *  3. Player has made a move event
+       */
       waitForPlayer() {
         Echo.join(`game.${this.game}`)
-          .joining(player => this.assignSecondPlayer(player))
+          .joining((player) => {
+            this.assignSecondPlayer(player)
+          })
           .listen('PlayerAssigned', (data) => {
             this.hideLoading()
 
@@ -62,14 +71,23 @@
           })
       },
 
+      /**
+       * Assigns the second player to the game as black.
+       */
       assignSecondPlayer(player) {
         axios.post('/api/chess/assignSecondPlayer', {player, game: this.game})
       },
 
+      /**
+       * Hides the loading element after the game starts.
+       */
       hideLoading() {
         this.loading = false
       },
 
+      /**
+       * Determines which player play which side by user IDs.
+       */
       determineSides(game) {
         if (game.white === this.user.id) {
           this.isMyMove = true
@@ -80,6 +98,9 @@
         return this.side = 'black'
       },
 
+      /**
+       * Makes a move.
+       */
       move(to) {
         let from = this.selected
         let game = this.game
@@ -90,19 +111,31 @@
           })
       },
 
+      /**
+       * Builds up the tile key from file and rank variables.
+       */
       getTileKey(file, rank) {
         return `${file}${rank}`
       },
 
+      /**
+       * Determines if there is a piece standing on given file and rank.
+       */
       getPiece(file, rank) {
         return this.pieces[this.getTileKey(file, rank)]
       },
 
+      /**
+       * Assigns the current position to the pieces variable.
+       */
       getPosition() {
         axios.get(`/api/chess/getPosition/${this.game}`)
           .then(response => this.pieces = response.data)
       },
 
+      /**
+       * Loads the logged used from the storage.
+       */
       loadUser() {
         axios.get('/api/user')
           .then(response => this.user = response.data)

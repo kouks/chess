@@ -46994,6 +46994,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['game'],
+
   components: { Tile: __WEBPACK_IMPORTED_MODULE_0__Tile_vue___default.a },
 
   data: function data() {
@@ -47018,11 +47019,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
   methods: {
+    /**
+     * Join the presence channel and listen for events:
+     *  1. Player joined the room event
+     *  2. Players have been assigned sides event
+     *  3. Player has made a move event
+     */
     waitForPlayer: function waitForPlayer() {
       var _this = this;
 
       Echo.join('game.' + this.game).joining(function (player) {
-        return _this.assignSecondPlayer(player);
+        _this.assignSecondPlayer(player);
       }).listen('PlayerAssigned', function (data) {
         _this.hideLoading();
 
@@ -47033,12 +47040,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         _this.isMyMove = !_this.isMyMove;
       });
     },
+
+
+    /**
+     * Assigns the second player to the game as black.
+     */
     assignSecondPlayer: function assignSecondPlayer(player) {
       axios.post('/api/chess/assignSecondPlayer', { player: player, game: this.game });
     },
+
+
+    /**
+     * Hides the loading element after the game starts.
+     */
     hideLoading: function hideLoading() {
       this.loading = false;
     },
+
+
+    /**
+     * Determines which player play which side by user IDs.
+     */
     determineSides: function determineSides(game) {
       if (game.white === this.user.id) {
         this.isMyMove = true;
@@ -47048,6 +47070,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
       return this.side = 'black';
     },
+
+
+    /**
+     * Makes a move.
+     */
     move: function move(to) {
       var _this2 = this;
 
@@ -47058,12 +47085,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         _this2.selected = null;
       });
     },
+
+
+    /**
+     * Builds up the tile key from file and rank variables.
+     */
     getTileKey: function getTileKey(file, rank) {
       return '' + file + rank;
     },
+
+
+    /**
+     * Determines if there is a piece standing on given file and rank.
+     */
     getPiece: function getPiece(file, rank) {
       return this.pieces[this.getTileKey(file, rank)];
     },
+
+
+    /**
+     * Assigns the current position to the pieces variable.
+     */
     getPosition: function getPosition() {
       var _this3 = this;
 
@@ -47071,6 +47113,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return _this3.pieces = response.data;
       });
     },
+
+
+    /**
+     * Loads the logged used from the storage.
+     */
     loadUser: function loadUser() {
       var _this4 = this;
 
@@ -47153,6 +47200,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
 
   methods: {
+    /**
+     * Determines whether the player wants to select a piece or move it.
+     */
     toggleTileOrMove: function toggleTileOrMove() {
       if (!this.isMyMove) {
         return;
@@ -47160,9 +47210,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
       return this.selected === null || this.selected === this.id ? this.toggleTile() : this.move();
     },
+
+
+    /**
+     * Sends an event, letting the board know that the player decided to move.
+     */
     move: function move() {
       this.$emit('move', this.id);
     },
+
+
+    /**
+     * Toggles selection status for a given tile.
+     */
     toggleTile: function toggleTile() {
       if (!this.selectingMyPiece()) {
         return;
@@ -47170,6 +47230,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
       return this.isSelected === 'selected' ? this.$emit('selected', null) : this.$emit('selected', this.id);
     },
+
+
+    /**
+     * Decides whether the player is selecting his pieces.
+     */
     selectingMyPiece: function selectingMyPiece() {
       return this.piece.startsWith(this.side);
     }
