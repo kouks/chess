@@ -19,12 +19,27 @@
     props: ['list'],
 
     methods: {
+      /**
+       * Returs parsed notation.
+       */
       transform(tile, piece) {
         return Move.transform(tile, piece)
       },
 
+      /**
+       * Rollbacks the board in time.
+       */
       rollback(move) {
-        this.$emit('rollback', move)
+        return this.lastMove() === move
+          ? this.$emit('rollback', false)
+          : this.$emit('rollback', move)
+      },
+
+      /**
+       * Determines the last move.
+       */
+      lastMove() {
+        return this.list[this.list.length - 1]
       }
     }
   }

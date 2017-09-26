@@ -46997,6 +46997,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
@@ -47276,11 +47277,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   props: ['list'],
 
   methods: {
+    /**
+     * Returs parsed notation.
+     */
     transform: function transform(tile, piece) {
       return __WEBPACK_IMPORTED_MODULE_0__chess_Move__["a" /* default */].transform(tile, piece);
     },
+
+
+    /**
+     * Rollbacks the board in time.
+     */
     rollback: function rollback(move) {
-      this.$emit('rollback', move);
+      return this.lastMove() === move ? this.$emit('rollback', false) : this.$emit('rollback', move);
+    },
+
+
+    /**
+     * Determines the last move.
+     */
+    lastMove: function lastMove() {
+      return this.list[this.list.length - 1];
     }
   }
 });
@@ -47463,7 +47480,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['id', 'piece', 'selected', 'side', 'isMyMove'],
+  props: ['id', 'piece', 'selected', 'side', 'isMyMove', 'rollback'],
 
   computed: {
     selectedClass: function selectedClass() {
@@ -47476,7 +47493,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
      * Determines whether the player wants to select a piece or move it.
      */
     toggleTileOrMove: function toggleTileOrMove() {
-      if (!this.isMyMove) {
+      if (!this.isMyMove || this.rollback !== false) {
         return;
       }
 
@@ -47577,7 +47594,8 @@ var render = function() {
                 piece: _vm.getPiece(file, rank),
                 side: _vm.side,
                 isMyMove: _vm.isMyMove,
-                selected: _vm.selected
+                selected: _vm.selected,
+                rollback: _vm.rollback
               },
               on: {
                 selected: function(val) {

@@ -9,7 +9,7 @@
 
 <script>
   export default {
-    props: ['id', 'piece', 'selected', 'side', 'isMyMove'],
+    props: ['id', 'piece', 'selected', 'side', 'isMyMove', 'rollback'],
 
     computed: {
       selectedClass() {
@@ -22,7 +22,7 @@
        * Determines whether the player wants to select a piece or move it.
        */
       toggleTileOrMove() {
-        if (! this.isMyMove) {
+        if (! this.isMyMove || this.rollback !== false) {
           return
         }
 

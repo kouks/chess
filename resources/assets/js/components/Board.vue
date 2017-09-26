@@ -9,6 +9,7 @@
         :side="side"
         :isMyMove="isMyMove"
         :selected="selected"
+        :rollback="rollback"
         @selected="(val) => { selected = val }"
         @move="(val) => { move(val) }"
       ></tile>
