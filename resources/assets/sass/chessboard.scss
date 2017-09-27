@@ -1,8 +1,15 @@
 .chessboard {
   width: 570px;
-  margin: 50px auto;
+  margin: 0 auto;
   border: 5px solid $black;
-  position: relative;
+
+  &.reversed {
+    transform: rotate(180deg);
+
+    .tile {
+      transform: rotate(180deg);
+    }
+  }
 
   .rank {
     width: 560px;
@@ -10,6 +17,7 @@
 
     .tile {
       background-color: $white;
+
       &:nth-child(odd) {
         background-color: $black;
       }
@@ -61,39 +69,58 @@
       }
     }
   }
+}
 
-  .move-list {
-    position: absolute;
-    top: -5px;
-    left: 580px;
-    width: 200px;
-    border: 5px solid $black;
-    counter-reset: moves;
+.move-list {
+  counter-reset: movess;
 
-    .move-list-item {
-      padding-left: 20px;
+  .move-list-item {
+    padding-left: 20px;
 
-      .move {
+    .move {
+      padding: 7px;
+      width: 50%;
+      float: left;
+      cursor: pointer;
+      position: relative;
+
+      &:nth-child(odd):before {
+        counter-increment: moves;
+        content: counter(moves) ".";
+        font-weight: bold;
+        position: absolute;
         padding: 7px;
-        width: 50%;
-        float: left;
-        cursor: pointer;
-        position: relative;
+        top: 0;
+        left: -20px;
+      }
 
-        &:nth-child(odd):before {
-          counter-increment: moves;
-          content: counter(moves) ".";
-          font-weight: bold;
-          position: absolute;
-          padding: 7px;
-          top: 0;
-          left: -20px;
-        }
-
-        &:hover {
-          background: white;
-        }
+      &:hover {
+        background: white;
       }
     }
   }
+}
+
+.to-move {
+  &.white-to-move {
+    color: black;
+    background: white;
+  }
+  &.black-to-move {
+    color: white;
+    background: black;
+  }
+  span {
+    text-align: center;
+    padding: 10px;
+    display: block;
+    width: 100%;
+    font-size: 18px;
+  }
+}
+
+.box {
+  width: 100%;
+  border: 5px solid $black;
+  overflow: hidden;
 }

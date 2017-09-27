@@ -8352,9 +8352,18 @@ button.close {
 
 .chessboard {
   width: 570px;
-  margin: 50px auto;
+  margin: 0 auto;
   border: 5px solid #189c66;
-  position: relative;
+}
+
+.chessboard.reversed {
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+
+.chessboard.reversed .tile {
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
 }
 
 .chessboard .rank {
@@ -8447,20 +8456,15 @@ button.close {
   background-position: -300px -60px;
 }
 
-.chessboard .move-list {
-  position: absolute;
-  top: -5px;
-  left: 580px;
-  width: 200px;
-  border: 5px solid #189c66;
-  counter-reset: moves;
+.move-list {
+  counter-reset: movess;
 }
 
-.chessboard .move-list .move-list-item {
+.move-list .move-list-item {
   padding-left: 20px;
 }
 
-.chessboard .move-list .move-list-item .move {
+.move-list .move-list-item .move {
   padding: 7px;
   width: 50%;
   float: left;
@@ -8468,7 +8472,7 @@ button.close {
   position: relative;
 }
 
-.chessboard .move-list .move-list-item .move:nth-child(odd):before {
+.move-list .move-list-item .move:nth-child(odd):before {
   counter-increment: moves;
   content: counter(moves) ".";
   font-weight: bold;
@@ -8478,7 +8482,39 @@ button.close {
   left: -20px;
 }
 
-.chessboard .move-list .move-list-item .move:hover {
+.move-list .move-list-item .move:hover {
   background: white;
+}
+
+.to-move.white-to-move {
+  color: black;
+  background: white;
+}
+
+.to-move.black-to-move {
+  color: white;
+  background: black;
+}
+
+.to-move span {
+  text-align: center;
+  padding: 10px;
+  display: block;
+  width: 100%;
+  font-size: 18px;
+}
+
+.box {
+  width: 100%;
+  border: 5px solid #189c66;
+  overflow: hidden;
+}
+
+.mb-1 {
+  margin-bottom: 10px;
+}
+
+.mb-2 {
+  margin-bottom: 20px;
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="move-list" v-show="list.length">
+  <div class="box move-list" v-show="list.length">
     <div class="move-list-item">
       <div
         class="move"

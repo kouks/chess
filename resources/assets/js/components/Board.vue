@@ -1,26 +1,36 @@
 <template>
-  <div class="chessboard">
-    <div v-for="rank in ranks" class="rank">
-      <tile
-        v-for="file in files"
-        :key="getTileKey(file, rank)"
-        :id="getTileKey(file, rank)"
-        :piece="getPiece(file, rank)"
-        :side="side"
-        :isMyMove="isMyMove"
-        :selected="selected"
-        :rollback="rollback"
-        @selected="(val) => { selected = val }"
-        @move="(val) => { move(val) }"
-      ></tile>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-9 mb-2">
+        <div :class="['chessboard', reversedClass]">
+          <div v-for="rank in ranks" class="rank">
+            <tile
+              v-for="file in files"
+              :key="getTileKey(file, rank)"
+              :id="getTileKey(file, rank)"
+              :piece="getPiece(file, rank)"
+              :side="side"
+              :isMyMove="isMyMove"
+              :selected="selected"
+              :rollback="rollback"
+              @selected="(val) => { selected = val }"
+              @move="(val) => { move(val) }"
+            ></tile>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <to-move
+          :side="side"
+          :isMyMove="isMyMove"
+        ></to-move>
+
+        <moves
+          :list="moves"
+          @rollback="(val) => { rollback = val }"
+        ></moves>
+      </div>
     </div>
-
-    <div class="loading" v-show="loading">Loading</div>
-
-    <moves
-      :list="moves"
-      @rollback="(val) => { rollback = val }"
-    ></moves>
   </div>
 </template>
 
@@ -28,11 +38,12 @@
   import Moves from './Moves.vue'
   import Position from '../chess/Position'
   import Tile from './Tile.vue'
+  import ToMove from './ToMove.vue'
 
   export default {
     props: ['game'],
 
-    components: {Tile, Moves},
+    components: {Tile, Moves, ToMove},
 
     data() {
       return {
@@ -41,6 +52,7 @@
         loading: true,
         moves: [],
         ranks: _.range(8),
+        reversedClass: '',
         rollback: false,
         selected: null,
         side: '',
@@ -128,8 +140,7 @@
        * Reverses the board for the player playing black pieces.
        */
       reverseBoard() {
-        this.files = _.reverse(this.files);
-        this.ranks = _.reverse(this.ranks);
+        this.reversedClass = 'reversed'
       },
 
       /**

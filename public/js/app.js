@@ -877,6 +877,13 @@ module.exports = __webpack_require__(50);
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
+/**
+ * Some global js enhancements.
+ */
+
+String.prototype.capitalize = function () {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+};
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -46972,6 +46979,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chess_Position__ = __webpack_require__(45);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Tile_vue__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Tile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Tile_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ToMove_vue__ = __webpack_require__(60);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ToMove_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__ToMove_vue__);
 //
 //
 //
@@ -46998,6 +47007,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -47006,7 +47026,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['game'],
 
-  components: { Tile: __WEBPACK_IMPORTED_MODULE_2__Tile_vue___default.a, Moves: __WEBPACK_IMPORTED_MODULE_0__Moves_vue___default.a },
+  components: { Tile: __WEBPACK_IMPORTED_MODULE_2__Tile_vue___default.a, Moves: __WEBPACK_IMPORTED_MODULE_0__Moves_vue___default.a, ToMove: __WEBPACK_IMPORTED_MODULE_3__ToMove_vue___default.a },
 
   data: function data() {
     return {
@@ -47015,6 +47035,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       loading: true,
       moves: [],
       ranks: _.range(8),
+      reversedClass: '',
       rollback: false,
       selected: null,
       side: '',
@@ -47108,8 +47129,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
      * Reverses the board for the player playing black pieces.
      */
     reverseBoard: function reverseBoard() {
-      this.files = _.reverse(this.files);
-      this.ranks = _.reverse(this.ranks);
+      this.reversedClass = 'reversed';
     },
 
 
@@ -47342,7 +47362,7 @@ var render = function() {
           expression: "list.length"
         }
       ],
-      staticClass: "move-list"
+      staticClass: "box move-list"
     },
     [
       _c(
@@ -47578,65 +47598,61 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "chessboard" },
-    [
-      _vm._l(_vm.ranks, function(rank) {
-        return _c(
+  return _c("div", { staticClass: "container" }, [
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-md-9 mb-2" }, [
+        _c(
           "div",
-          { staticClass: "rank" },
-          _vm._l(_vm.files, function(file) {
-            return _c("tile", {
-              key: _vm.getTileKey(file, rank),
-              attrs: {
-                id: _vm.getTileKey(file, rank),
-                piece: _vm.getPiece(file, rank),
-                side: _vm.side,
-                isMyMove: _vm.isMyMove,
-                selected: _vm.selected,
-                rollback: _vm.rollback
-              },
-              on: {
-                selected: function(val) {
-                  _vm.selected = val
-                },
-                move: function(val) {
-                  _vm.move(val)
-                }
-              }
-            })
+          { class: ["chessboard", _vm.reversedClass] },
+          _vm._l(_vm.ranks, function(rank) {
+            return _c(
+              "div",
+              { staticClass: "rank" },
+              _vm._l(_vm.files, function(file) {
+                return _c("tile", {
+                  key: _vm.getTileKey(file, rank),
+                  attrs: {
+                    id: _vm.getTileKey(file, rank),
+                    piece: _vm.getPiece(file, rank),
+                    side: _vm.side,
+                    isMyMove: _vm.isMyMove,
+                    selected: _vm.selected,
+                    rollback: _vm.rollback
+                  },
+                  on: {
+                    selected: function(val) {
+                      _vm.selected = val
+                    },
+                    move: function(val) {
+                      _vm.move(val)
+                    }
+                  }
+                })
+              })
+            )
           })
         )
-      }),
+      ]),
       _vm._v(" "),
       _c(
         "div",
-        {
-          directives: [
-            {
-              name: "show",
-              rawName: "v-show",
-              value: _vm.loading,
-              expression: "loading"
+        { staticClass: "col-md-3" },
+        [
+          _c("to-move", { attrs: { side: _vm.side, isMyMove: _vm.isMyMove } }),
+          _vm._v(" "),
+          _c("moves", {
+            attrs: { list: _vm.moves },
+            on: {
+              rollback: function(val) {
+                _vm.rollback = val
+              }
             }
-          ],
-          staticClass: "loading"
-        },
-        [_vm._v("Loading")]
-      ),
-      _vm._v(" "),
-      _c("moves", {
-        attrs: { list: _vm.moves },
-        on: {
-          rollback: function(val) {
-            _vm.rollback = val
-          }
-        }
-      })
-    ],
-    2
-  )
+          })
+        ],
+        1
+      )
+    ])
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -47653,6 +47669,119 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */,
+/* 57 */,
+/* 58 */,
+/* 59 */,
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(2)
+/* script */
+var __vue_script__ = __webpack_require__(61)
+/* template */
+var __vue_template__ = __webpack_require__(62)
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ToMove.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] ToMove.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-d79a1fd8", Component.options)
+  } else {
+    hotAPI.reload("data-v-d79a1fd8", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 61 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['side', 'isMyMove'],
+
+  computed: {
+    moveClass: function moveClass() {
+      return this.determineColor() + '-to-move';
+    },
+    toMove: function toMove() {
+      return this.determineColor().capitalize() + ' to Move';
+    }
+  },
+
+  methods: {
+    determineColor: function determineColor() {
+      if (this.side === 'white' && this.isMyMove || this.side === 'black' && !this.isMyMove) {
+        return 'white';
+      }
+
+      return 'black';
+    }
+  }
+});
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { class: ["box", "mb-1", "to-move", _vm.moveClass] }, [
+    _c("span", [_vm._v(_vm._s(_vm.toMove))])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-d79a1fd8", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);

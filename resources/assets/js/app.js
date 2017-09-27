@@ -1,3 +1,10 @@
+/**
+ * Some global js enhancements.
+ */
+
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1)
+}
 
 /**
  * First we will load all of this project's JavaScript dependencies which
