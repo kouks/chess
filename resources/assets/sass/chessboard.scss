@@ -1,11 +1,11 @@
 .chessboard {
-  width: 490px;
+  width: 570px;
   margin: 50px auto;
   border: 5px solid $black;
-  overflow: hidden;
+  position: relative;
 
-  .file {
-    width: 480px;
+  .rank {
+    width: 560px;
     display: flex;
 
     .tile {
@@ -26,33 +26,74 @@
   }
 
   .tile {
-    width: 60px;
-    height: 60px;
-    background-image: url(/img/pieces.png);
-    background-repeat: no-repeat;
-    background-position: 60px 60px;
-    box-sizing: border-box;
+    width: 70px;
+    height: 70px;
+    border: 5px solid transparent;
 
     &.selected {
-      border: 3px solid $brand-primary;
+      border-color: $brand-primary;
     }
 
-    &.black {
-      &.queen  { background-position: 0px 0px; }
-      &.king   { background-position: -60px 0px; }
-      &.rook   { background-position: -120px 0px; }
-      &.knight { background-position: -180px 0px; }
-      &.bishop { background-position: -240px 0px; }
-      &.pawn   { background-position: -300px 0px; }
-    }
+    .piece {
+      width: 60px;
+      height: 60px;
+      background-image: url(/img/pieces.png);
+      background-repeat: no-repeat;
+      background-position: 60px 60px;
+      cursor: pointer;
 
-    &.white {
-      &.queen  { background-position: 0px -60px; }
-      &.king   { background-position: -60px -60px; }
-      &.rook   { background-position: -120px -60px; }
-      &.knight { background-position: -180px -60px; }
-      &.bishop { background-position: -240px -60px; }
-      &.pawn   { background-position: -300px -60px; }
+      &.black {
+        &-queen  { background-position: 0px 0px; }
+        &-king   { background-position: -60px 0px; }
+        &-rook   { background-position: -120px 0px; }
+        &-knight { background-position: -180px 0px; }
+        &-bishop { background-position: -240px 0px; }
+        &-pawn   { background-position: -300px 0px; }
+      }
+
+      &.white {
+        &-queen  { background-position: 0px -60px; }
+        &-king   { background-position: -60px -60px; }
+        &-rook   { background-position: -120px -60px; }
+        &-knight { background-position: -180px -60px; }
+        &-bishop { background-position: -240px -60px; }
+        &-pawn   { background-position: -300px -60px; }
+      }
+    }
+  }
+
+  .move-list {
+    position: absolute;
+    top: -5px;
+    left: 580px;
+    width: 200px;
+    border: 5px solid $black;
+    counter-reset: moves;
+
+    .move-list-item {
+      padding-left: 20px;
+
+      .move {
+        padding: 7px;
+        width: 50%;
+        float: left;
+        cursor: pointer;
+        position: relative;
+
+        &:nth-child(odd):before {
+          counter-increment: moves;
+          content: counter(moves) ".";
+          font-weight: bold;
+          position: absolute;
+          padding: 7px;
+          top: 0;
+          left: -20px;
+        }
+
+        &:hover {
+          background: white;
+        }
+      }
     }
   }
 }
