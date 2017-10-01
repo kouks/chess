@@ -11,6 +11,8 @@
                     <a href="{{ route('games.new') }}" class="btn btn-primary">New Game</a>
                 </div>
             </div>
+
+            <archive></archive>
         </div>
     </div>
 </div>

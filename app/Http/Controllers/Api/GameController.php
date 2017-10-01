@@ -9,9 +9,27 @@ use MongoDB\Model\BSONDocument;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\Concerns\FetchesGame;
 
-class ChessController extends Controller
+class GameController extends Controller
 {
     use FetchesGame;
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param  string  $gameId
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $games = mongo()->games->find([
+            '$or' => [
+                ['white' => auth()->id()],
+                ['black' => auth()->id()],
+            ],
+        ])->toArray();
+
+        return response($games, 200);
+    }
 
     /**
      * Assings a second player to the game.

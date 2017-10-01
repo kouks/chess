@@ -1,5 +1,5 @@
 @extends('layouts.app')
 
 @section('content')
-    <board game="{{ $game }}"></board>
+    <game id="{{ $game }}"></game>
 @endsection

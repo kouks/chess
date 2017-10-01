@@ -8457,7 +8457,7 @@ button.close {
 }
 
 .move-list {
-  counter-reset: movess;
+  counter-reset: moves;
 }
 
 .move-list .move-list-item {

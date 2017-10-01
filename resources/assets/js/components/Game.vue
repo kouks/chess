@@ -19,14 +19,16 @@
           </div>
         </div>
       </div>
+
       <div class="col-md-3">
         <to-move
           :side="side"
           :isMyMove="isMyMove"
+          :loading="loading"
         ></to-move>
 
         <moves
-          :list="moves"
+          :list="board.getMoves()"
           @rollback="(val) => { rollback = val }"
         ></moves>
       </div>
@@ -36,21 +38,21 @@
 
 <script>
   import Moves from './Moves.vue'
-  import Position from '../chess/Position'
+  import Board from '../chess/Board'
   import Tile from './Tile.vue'
   import ToMove from './ToMove.vue'
 
   export default {
-    props: ['game'],
+    props: ['id'],
 
     components: {Tile, Moves, ToMove},
 
     data() {
       return {
+        board: new Board,
         files: _.range(8),
         isMyMove: false,
         loading: true,
-        moves: [],
         ranks: _.range(8),
         reversedClass: '',
         rollback: false,
@@ -62,7 +64,7 @@
 
     computed: {
       pieces() {
-        return Position.calculateFromMoves(this.moves, this.rollback)
+        return this.board.getPieces(this.rollback)
       }
     },
 
@@ -82,7 +84,7 @@
        *  3. Player has made a move event
        */
       waitForPlayer() {
-        Echo.join(`game.${this.game}`)
+        Echo.join(`game.${this.id}`)
           .joining((user) => {
             this.joinRoom(user)
           })
@@ -97,19 +99,19 @@
             this.checkMoveOrder(data.game)
           })
           .listen('MoveMade', (data) => {
-            this.setMoves(data.game.moves)
+            this.board.setMoves(data.game.moves)
 
-            this.isMyMove = ! this.isMyMove
+            this.checkMoveOrder(data.game)
 
-            this.rollback = false;
+            this.resetRollback()
           })
       },
 
       /**
-       * Assigns the second player to the game as black.
+       * Assigns the second player to the game as black or add a spectator.
        */
       joinRoom(user) {
-        axios.post(`/api/chess/${this.game}/joinRoom`, {user})
+        axios.post(`/api/games/${this.id}/joinRoom`, {user})
       },
 
       /**
@@ -117,6 +119,13 @@
        */
       hideLoading() {
         this.loading = false
+      },
+
+      /**
+       * Resets the board to current position.
+       */
+      resetRollback() {
+        this.rollback = false
       },
 
       /**
@@ -128,7 +137,7 @@
         }
 
         if (game.black === this.user.id) {
-          this.reverseBoard();
+          this.reverseBoard()
 
           return this.side = 'black'
         }
@@ -147,8 +156,8 @@
        * Checks whether the given player is on his move.
        */
       checkMoveOrder(game) {
-        if ((this.side === 'white' && this.numberOfMoves(game) % 2 === 0)
-          || (this.side === 'black' && this.numberOfMoves(game) % 2 !== 0)) {
+        if ((this.side === 'white' && this.numberOfMovesEven(game))
+          || (this.side === 'black' && ! this.numberOfMovesEven(game))) {
           return this.isMyMove = true
         }
 
@@ -156,10 +165,10 @@
       },
 
       /**
-       * Returns the nubmer of moves in given game.
+       * Checks if the number of moves in game is even.
        */
-      numberOfMoves(game) {
-        return game.moves ? game.moves.length : 0
+      numberOfMovesEven(game) {
+        return (game.moves ? game.moves.length : 0) % 2 === 0
       },
 
       /**
@@ -175,7 +184,7 @@
         //   return
         // }
 
-        axios.post(`/api/chess/${this.game}/moves`, {to, from, piece})
+        axios.post(`/api/chess/${this.id}/moves`, {to, from, piece})
           .then(() => {
             this.selected = null
           })
@@ -199,15 +208,10 @@
        * Loads moves from storage.
        */
       loadMoves() {
-        axios.get(`/api/chess/${this.game}/moves`)
-          .then(response => this.setMoves(response.data))
-      },
-
-      /**
-       * Assigns all current moves to a variable.
-       */
-      setMoves(moves) {
-        this.moves = moves
+        axios.get(`/api/chess/${this.id}/moves`)
+          .then((response) => {
+            this.board.setMoves(response.data)
+          })
       },
 
       /**

@@ -13,7 +13,7 @@
 </template>
 
 <script>
-  import Move from '../chess/Move'
+  import Transformer from '../chess/Transformer'
 
   export default {
     props: ['list'],
@@ -23,7 +23,7 @@
        * Returs parsed notation.
        */
       transform(tile, piece) {
-        return Move.transform(tile, piece)
+        return Transformer.parseMove(tile, piece)
       },
 
       /**

@@ -1,12 +1,12 @@
 <template>
-  <div :class="['box', 'mb-1', 'to-move', moveClass]">
+  <div :class="['box', 'mb-1', 'to-move', moveClass]" v-show="! loading">
     <span>{{ toMove }}</span>
   </div>
 </template>
 
 <script>
   export default {
-    props: ['side', 'isMyMove'],
+    props: ['side', 'isMyMove', 'loading'],
 
     computed: {
       moveClass() {

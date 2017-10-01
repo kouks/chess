@@ -7,9 +7,7 @@ export default {
     'pawn': '', 'rook': 'R', 'bishop': 'B', 'knight': 'N', 'queen': 'Q', 'king': 'K'
   },
 
-  transform(tile, piece) {
-    piece = piece.replace('white-', '').replace('black-', '')
-
-    return this.pieceTransformers[piece] + this.positionTransformers[tile]
+  parseMove(tile, piece) {
+    return this.pieceTransformers[piece.name] + this.positionTransformers[tile]
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div :class="['tile', selectedClass]">
     <div
-      :class="['piece', piece]"
+      :class="['piece', pieceClass]"
       @click="toggleTileOrMove()"
     ></div>
   </div>
@@ -14,6 +14,10 @@
     computed: {
       selectedClass() {
         return this.id === this.selected ? 'selected' : ''
+      },
+
+      pieceClass() {
+        return this.piece ? this.piece.getClass() : ''
       }
     },
 
@@ -65,7 +69,7 @@
        * Decides whether the player is selecting his pieces.
        */
       selectingMyPiece() {
-        return this.piece && this.piece.startsWith(this.side)
+        return this.piece && this.piece.isOfColor(this.side)
       }
     }
   }
