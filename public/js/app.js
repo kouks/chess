@@ -906,7 +906,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(11);
-module.exports = __webpack_require__(63);
+module.exports = __webpack_require__(66);
 
 
 /***/ }),
@@ -936,7 +936,7 @@ __webpack_require__(12);
  */
 
 Vue.component('game', __webpack_require__(40));
-Vue.component('archive', __webpack_require__(60));
+Vue.component('archive', __webpack_require__(63));
 
 var app = new Vue({
   el: '#app'
@@ -46968,7 +46968,7 @@ var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(41)
 /* template */
-var __vue_template__ = __webpack_require__(59)
+var __vue_template__ = __webpack_require__(62)
 /* styles */
 var __vue_styles__ = null
 /* scopeId */
@@ -47011,16 +47011,16 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ai_Core__ = __webpack_require__(75);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Moves_vue__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ai_Core__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Moves_vue__ = __webpack_require__(43);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Moves_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Moves_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__chess_Board__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Tile_vue__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__chess_Board__ = __webpack_require__(47);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Tile_vue__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Tile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__Tile_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ToMove_vue__ = __webpack_require__(56);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ToMove_vue__ = __webpack_require__(57);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ToMove_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__ToMove_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__mixins_types_VersusPlayer_js__ = __webpack_require__(73);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__mixins_types_VersusAI_js__ = __webpack_require__(74);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__mixins_types_VersusPlayer_js__ = __webpack_require__(60);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__mixins_types_VersusAI_js__ = __webpack_require__(61);
 //
 //
 //
@@ -47243,14 +47243,45 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 /* 42 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Core = function () {
+  function Core() {
+    _classCallCheck(this, Core);
+  }
+
+  _createClass(Core, [{
+    key: "think",
+    value: function think(board) {
+      console.log(board.getPieces());
+
+      return {
+        from: 11,
+        to: 22
+      };
+    }
+  }]);
+
+  return Core;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (Core);
+
+/***/ }),
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(43)
+var __vue_script__ = __webpack_require__(44)
 /* template */
-var __vue_template__ = __webpack_require__(45)
+var __vue_template__ = __webpack_require__(46)
 /* styles */
 var __vue_styles__ = null
 /* scopeId */
@@ -47288,12 +47319,12 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__chess_Transformer__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__chess_Transformer__ = __webpack_require__(45);
 //
 //
 //
@@ -47341,7 +47372,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47360,7 +47391,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47419,16 +47450,16 @@ if (false) {
 }
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Pieces_King__ = __webpack_require__(47);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Pieces_Queen__ = __webpack_require__(48);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Pieces_Rook__ = __webpack_require__(49);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Pieces_Knight__ = __webpack_require__(50);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Pieces_Bishop__ = __webpack_require__(51);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Pieces_Pawn__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Pieces_King__ = __webpack_require__(48);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Pieces_Queen__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Pieces_Rook__ = __webpack_require__(50);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Pieces_Knight__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Pieces_Bishop__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Pieces_Pawn__ = __webpack_require__(53);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -47508,7 +47539,7 @@ var Board = function () {
 /* harmony default export */ __webpack_exports__["a"] = (Board);
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47542,7 +47573,7 @@ var King = function (_Piece) {
 /* harmony default export */ __webpack_exports__["a"] = (King);
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47576,7 +47607,7 @@ var Queen = function (_Piece) {
 /* harmony default export */ __webpack_exports__["a"] = (Queen);
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47610,7 +47641,7 @@ var Rook = function (_Piece) {
 /* harmony default export */ __webpack_exports__["a"] = (Rook);
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47644,7 +47675,7 @@ var Knight = function (_Piece) {
 /* harmony default export */ __webpack_exports__["a"] = (Knight);
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47678,7 +47709,7 @@ var Bishop = function (_Piece) {
 /* harmony default export */ __webpack_exports__["a"] = (Bishop);
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47712,15 +47743,15 @@ var Pawn = function (_Piece) {
 /* harmony default export */ __webpack_exports__["a"] = (Pawn);
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(54)
+var __vue_script__ = __webpack_require__(55)
 /* template */
-var __vue_template__ = __webpack_require__(55)
+var __vue_template__ = __webpack_require__(56)
 /* styles */
 var __vue_styles__ = null
 /* scopeId */
@@ -47758,7 +47789,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47839,7 +47870,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47868,15 +47899,15 @@ if (false) {
 }
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(57)
+var __vue_script__ = __webpack_require__(58)
 /* template */
-var __vue_template__ = __webpack_require__(58)
+var __vue_template__ = __webpack_require__(59)
 /* styles */
 var __vue_styles__ = null
 /* scopeId */
@@ -47914,7 +47945,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47950,7 +47981,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47984,7 +48015,100 @@ if (false) {
 }
 
 /***/ }),
-/* 59 */
+/* 60 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony default export */ var _unused_webpack_default_export = ({
+  methods: {
+    /**
+     * Join the presence channel and listen for events:
+     *  1. Player joined the room event
+     *  2. Players have been assigned sides event
+     *  3. Player has made a move event
+     */
+    init: function init() {
+      var _this = this;
+
+      Echo.join('game.' + this.id).joining(function (user) {
+        _this.joinRoom(user);
+      })
+      // .leaving((user) => { TODO
+      //   this.leaveRoom(user)
+      // })
+      .listen('PlayerJoined', function (data) {
+        _this.hideLoading();
+
+        _this.determineRoles(data.game);
+
+        _this.checkMoveOrder(data.game);
+      }).listen('MoveMade', function (data) {
+        _this.board.setMoves(data.game.moves);
+
+        _this.checkMoveOrder(data.game);
+
+        _this.resetRollback();
+      });
+    },
+
+
+    /**
+     * Assigns the second player to the game as black or add a spectator.
+     */
+    joinRoom: function joinRoom(user) {
+      axios.post('/api/games/' + this.id + '/joinRoom', { user: user });
+    }
+  }
+});
+
+/***/ }),
+/* 61 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+  methods: {
+    init: function init() {
+      var _this = this;
+
+      Echo.join('game.' + this.id).here(function () {
+        _this.assignAI();
+      }).listen('AIAssigned', function (data) {
+        _this.hideLoading();
+
+        _this.determineRoles(data.game);
+
+        _this.checkMoveOrder(data.game);
+
+        _this.attemptAIMove();
+      }).listen('MoveMade', function (data) {
+        _this.board.setMoves(data.game.moves);
+
+        _this.checkMoveOrder(data.game);
+
+        _this.resetRollback();
+
+        _this.attemptAIMove();
+      });
+    },
+    assignAI: function assignAI() {
+      axios.post('/api/games/' + this.id + '/assignAI');
+    },
+    AIToMove: function AIToMove() {
+      return this.isMyMove === false;
+    },
+    attemptAIMove: function attemptAIMove() {
+      if (this.AIToMove()) {
+        var move = this.AI.think(this.board);
+
+        this.move(move);
+      }
+    }
+  }
+});
+
+/***/ }),
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -48044,6 +48168,7 @@ var render = function() {
             on: {
               rollback: function(val) {
                 _vm.rollback = val
+                _vm.selected = null
               }
             }
           })
@@ -48064,15 +48189,15 @@ if (false) {
 }
 
 /***/ }),
-/* 60 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(61)
+var __vue_script__ = __webpack_require__(64)
 /* template */
-var __vue_template__ = __webpack_require__(62)
+var __vue_template__ = __webpack_require__(65)
 /* styles */
 var __vue_styles__ = null
 /* scopeId */
@@ -48110,7 +48235,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 61 */
+/* 64 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48172,7 +48297,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 62 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -48225,143 +48350,10 @@ if (false) {
 }
 
 /***/ }),
-/* 63 */
+/* 66 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 64 */,
-/* 65 */,
-/* 66 */,
-/* 67 */,
-/* 68 */,
-/* 69 */,
-/* 70 */,
-/* 71 */,
-/* 72 */,
-/* 73 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* unused harmony default export */ var _unused_webpack_default_export = ({
-  methods: {
-    /**
-     * Join the presence channel and listen for events:
-     *  1. Player joined the room event
-     *  2. Players have been assigned sides event
-     *  3. Player has made a move event
-     */
-    init: function init() {
-      var _this = this;
-
-      Echo.join('game.' + this.id).joining(function (user) {
-        _this.joinRoom(user);
-      })
-      // .leaving((user) => { TODO
-      //   this.leaveRoom(user)
-      // })
-      .listen('PlayerJoined', function (data) {
-        _this.hideLoading();
-
-        _this.determineRoles(data.game);
-
-        _this.checkMoveOrder(data.game);
-      }).listen('MoveMade', function (data) {
-        _this.board.setMoves(data.game.moves);
-
-        _this.checkMoveOrder(data.game);
-
-        _this.resetRollback();
-      });
-    },
-
-
-    /**
-     * Assigns the second player to the game as black or add a spectator.
-     */
-    joinRoom: function joinRoom(user) {
-      axios.post('/api/games/' + this.id + '/joinRoom', { user: user });
-    }
-  }
-});
-
-/***/ }),
-/* 74 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
-  methods: {
-    init: function init() {
-      var _this = this;
-
-      Echo.join('game.' + this.id).here(function () {
-        _this.assignAI();
-      }).listen('AIAssigned', function (data) {
-        _this.hideLoading();
-
-        _this.determineRoles(data.game);
-
-        _this.checkMoveOrder(data.game);
-
-        _this.attemptAIMove();
-      }).listen('MoveMade', function (data) {
-        _this.board.setMoves(data.game.moves);
-
-        _this.checkMoveOrder(data.game);
-
-        _this.resetRollback();
-
-        _this.attemptAIMove();
-      });
-    },
-    assignAI: function assignAI() {
-      axios.post('/api/games/' + this.id + '/assignAI');
-    },
-    AIToMove: function AIToMove() {
-      return this.isMyMove === false;
-    },
-    attemptAIMove: function attemptAIMove() {
-      if (this.AIToMove()) {
-        var move = this.AI.think(this.board);
-
-        this.move(move);
-      }
-    }
-  }
-});
-
-/***/ }),
-/* 75 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Core = function () {
-  function Core() {
-    _classCallCheck(this, Core);
-  }
-
-  _createClass(Core, [{
-    key: "think",
-    value: function think(board) {
-      console.log(board.getPieces());
-
-      return {
-        from: 11,
-        to: 22
-      };
-    }
-  }]);
-
-  return Core;
-}();
-
-/* harmony default export */ __webpack_exports__["a"] = (Core);
 
 /***/ })
 /******/ ]);

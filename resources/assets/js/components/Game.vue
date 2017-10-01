@@ -29,7 +29,7 @@
 
         <moves
           :list="board.getMoves()"
-          @rollback="(val) => { rollback = val }"
+          @rollback="(val) => { rollback = val; selected = null }"
         ></moves>
       </div>
     </div>
