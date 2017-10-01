@@ -14,7 +14,7 @@
               :selected="selected"
               :rollback="rollback"
               @selected="(val) => { selected = val }"
-              @move="(val) => { move(val) }"
+              @move="(val) => { validateAndBuildMove(val) }"
             ></tile>
           </div>
         </div>
@@ -37,18 +37,24 @@
 </template>
 
 <script>
+  import Core from '../ai/Core'
   import Moves from './Moves.vue'
   import Board from '../chess/Board'
   import Tile from './Tile.vue'
   import ToMove from './ToMove.vue'
+  import VersusPlayer from '../mixins/types/VersusPlayer.js'
+  import VersusAI from '../mixins/types/VersusAI.js'
 
   export default {
     props: ['id'],
 
     components: {Tile, Moves, ToMove},
 
+    mixins: [VersusAI],
+
     data() {
       return {
+        AI: new Core,
         board: new Board,
         files: _.range(8),
         isMyMove: false,
@@ -71,61 +77,24 @@
     mounted() {
       this.loadUser()
 
-      this.waitForPlayer()
+      this.init()
 
       this.loadMoves()
     },
 
     methods: {
       /**
-       * Join the presence channel and listen for events:
-       *  1. Player joined the room event
-       *  2. Players have been assigned sides event
-       *  3. Player has made a move event
+       * Builds up the tile key from file and rank variables.
        */
-      waitForPlayer() {
-        Echo.join(`game.${this.id}`)
-          .joining((user) => {
-            this.joinRoom(user)
-          })
-          // .leaving((user) => { TODO
-          //   this.leaveRoom(user)
-          // })
-          .listen('PlayerJoined', (data) => {
-            this.hideLoading()
-
-            this.determineRoles(data.game)
-
-            this.checkMoveOrder(data.game)
-          })
-          .listen('MoveMade', (data) => {
-            this.board.setMoves(data.game.moves)
-
-            this.checkMoveOrder(data.game)
-
-            this.resetRollback()
-          })
+      getTileKey(file, rank) {
+        return `${file}${rank}`
       },
 
       /**
-       * Assigns the second player to the game as black or add a spectator.
+       * Determines if there is a piece standing on given file and rank.
        */
-      joinRoom(user) {
-        axios.post(`/api/games/${this.id}/joinRoom`, {user})
-      },
-
-      /**
-       * Hides the loading element after the game starts.
-       */
-      hideLoading() {
-        this.loading = false
-      },
-
-      /**
-       * Resets the board to current position.
-       */
-      resetRollback() {
-        this.rollback = false
+      getPiece(file, rank) {
+        return this.pieces[this.getTileKey(file, rank)]
       },
 
       /**
@@ -143,6 +112,20 @@
         }
 
         this.side = 'spectator'
+      },
+
+      /**
+       * Hides the loading element after the game starts.
+       */
+      hideLoading() {
+        this.loading = false
+      },
+
+      /**
+       * Resets the board to current position.
+       */
+      resetRollback() {
+        this.rollback = false
       },
 
       /**
@@ -172,36 +155,30 @@
       },
 
       /**
-       * Validates a move and eventually makes it.
+       * Builds up the move query.
        */
-      move(to) {
+      validateAndBuildMove(to) {
         let from = this.selected
-        let position = this.pieces
-        let piece = this.pieces[from]
 
         // need to determine if it would be a taking move/check/checkmate
+        // let position = this.pieces
         // if (! Move.valid(from, to, position)) {
         //   return
         // }
 
-        axios.post(`/api/chess/${this.id}/moves`, {to, from, piece})
+        this.move({to, from});
+      },
+
+      /**
+       * Validates a move and eventually makes it.
+       */
+      move(data) {
+        let piece = this.pieces[data.from]
+
+        axios.post(`/api/chess/${this.id}/moves`, $.extend(data, {piece}))
           .then(() => {
             this.selected = null
           })
-      },
-
-      /**
-       * Builds up the tile key from file and rank variables.
-       */
-      getTileKey(file, rank) {
-        return `${file}${rank}`
-      },
-
-      /**
-       * Determines if there is a piece standing on given file and rank.
-       */
-      getPiece(file, rank) {
-        return this.pieces[this.getTileKey(file, rank)]
       },
 
       /**

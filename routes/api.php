@@ -20,6 +20,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('/games', 'GameController@index');
     Route::post('/games/{gameId}/joinRoom', 'GameController@joinRoom');
+    Route::post('/games/{gameId}/assignAI', 'GameController@assignAI');
 
     Route::get('/chess/{gameId}/moves', 'MovesController@index');
     Route::post('/chess/{gameId}/moves', 'MovesController@store');

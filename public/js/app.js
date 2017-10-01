@@ -906,7 +906,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(11);
-module.exports = __webpack_require__(60);
+module.exports = __webpack_require__(63);
 
 
 /***/ }),
@@ -936,7 +936,7 @@ __webpack_require__(12);
  */
 
 Vue.component('game', __webpack_require__(40));
-Vue.component('archive', __webpack_require__(70));
+Vue.component('archive', __webpack_require__(60));
 
 var app = new Vue({
   el: '#app'
@@ -47011,13 +47011,16 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Moves_vue__ = __webpack_require__(42);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Moves_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Moves_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chess_Board__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Tile_vue__ = __webpack_require__(53);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Tile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Tile_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ToMove_vue__ = __webpack_require__(56);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ToMove_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__ToMove_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ai_Core__ = __webpack_require__(75);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Moves_vue__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Moves_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Moves_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__chess_Board__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Tile_vue__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Tile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__Tile_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ToMove_vue__ = __webpack_require__(56);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ToMove_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__ToMove_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__mixins_types_VersusPlayer_js__ = __webpack_require__(73);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__mixins_types_VersusAI_js__ = __webpack_require__(74);
 //
 //
 //
@@ -47056,6 +47059,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+
+
+
 
 
 
@@ -47065,11 +47071,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['id'],
 
-  components: { Tile: __WEBPACK_IMPORTED_MODULE_2__Tile_vue___default.a, Moves: __WEBPACK_IMPORTED_MODULE_0__Moves_vue___default.a, ToMove: __WEBPACK_IMPORTED_MODULE_3__ToMove_vue___default.a },
+  components: { Tile: __WEBPACK_IMPORTED_MODULE_3__Tile_vue___default.a, Moves: __WEBPACK_IMPORTED_MODULE_1__Moves_vue___default.a, ToMove: __WEBPACK_IMPORTED_MODULE_4__ToMove_vue___default.a },
+
+  mixins: [__WEBPACK_IMPORTED_MODULE_6__mixins_types_VersusAI_js__["a" /* default */]],
 
   data: function data() {
     return {
-      board: new __WEBPACK_IMPORTED_MODULE_1__chess_Board__["a" /* default */](),
+      AI: new __WEBPACK_IMPORTED_MODULE_0__ai_Core__["a" /* default */](),
+      board: new __WEBPACK_IMPORTED_MODULE_2__chess_Board__["a" /* default */](),
       files: _.range(8),
       isMyMove: false,
       loading: true,
@@ -47092,7 +47101,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   mounted: function mounted() {
     this.loadUser();
 
-    this.waitForPlayer();
+    this.init();
 
     this.loadMoves();
   },
@@ -47100,57 +47109,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
   methods: {
     /**
-     * Join the presence channel and listen for events:
-     *  1. Player joined the room event
-     *  2. Players have been assigned sides event
-     *  3. Player has made a move event
+     * Builds up the tile key from file and rank variables.
      */
-    waitForPlayer: function waitForPlayer() {
-      var _this = this;
-
-      Echo.join('game.' + this.id).joining(function (user) {
-        _this.joinRoom(user);
-      })
-      // .leaving((user) => { TODO
-      //   this.leaveRoom(user)
-      // })
-      .listen('PlayerJoined', function (data) {
-        _this.hideLoading();
-
-        _this.determineRoles(data.game);
-
-        _this.checkMoveOrder(data.game);
-      }).listen('MoveMade', function (data) {
-        _this.board.setMoves(data.game.moves);
-
-        _this.checkMoveOrder(data.game);
-
-        _this.resetRollback();
-      });
+    getTileKey: function getTileKey(file, rank) {
+      return '' + file + rank;
     },
 
 
     /**
-     * Assigns the second player to the game as black or add a spectator.
+     * Determines if there is a piece standing on given file and rank.
      */
-    joinRoom: function joinRoom(user) {
-      axios.post('/api/games/' + this.id + '/joinRoom', { user: user });
-    },
-
-
-    /**
-     * Hides the loading element after the game starts.
-     */
-    hideLoading: function hideLoading() {
-      this.loading = false;
-    },
-
-
-    /**
-     * Resets the board to current position.
-     */
-    resetRollback: function resetRollback() {
-      this.rollback = false;
+    getPiece: function getPiece(file, rank) {
+      return this.pieces[this.getTileKey(file, rank)];
     },
 
 
@@ -47169,6 +47139,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       }
 
       this.side = 'spectator';
+    },
+
+
+    /**
+     * Hides the loading element after the game starts.
+     */
+    hideLoading: function hideLoading() {
+      this.loading = false;
+    },
+
+
+    /**
+     * Resets the board to current position.
+     */
+    resetRollback: function resetRollback() {
+      this.rollback = false;
     },
 
 
@@ -47201,39 +47187,32 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
     /**
-     * Validates a move and eventually makes it.
+     * Builds up the move query.
      */
-    move: function move(to) {
-      var _this2 = this;
-
+    validateAndBuildMove: function validateAndBuildMove(to) {
       var from = this.selected;
-      var position = this.pieces;
-      var piece = this.pieces[from];
 
       // need to determine if it would be a taking move/check/checkmate
+      // let position = this.pieces
       // if (! Move.valid(from, to, position)) {
       //   return
       // }
 
-      axios.post('/api/chess/' + this.id + '/moves', { to: to, from: from, piece: piece }).then(function () {
-        _this2.selected = null;
+      this.move({ to: to, from: from });
+    },
+
+
+    /**
+     * Validates a move and eventually makes it.
+     */
+    move: function move(data) {
+      var _this = this;
+
+      var piece = this.pieces[data.from];
+
+      axios.post('/api/chess/' + this.id + '/moves', $.extend(data, { piece: piece })).then(function () {
+        _this.selected = null;
       });
-    },
-
-
-    /**
-     * Builds up the tile key from file and rank variables.
-     */
-    getTileKey: function getTileKey(file, rank) {
-      return '' + file + rank;
-    },
-
-
-    /**
-     * Determines if there is a piece standing on given file and rank.
-     */
-    getPiece: function getPiece(file, rank) {
-      return this.pieces[this.getTileKey(file, rank)];
     },
 
 
@@ -47241,10 +47220,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
      * Loads moves from storage.
      */
     loadMoves: function loadMoves() {
-      var _this3 = this;
+      var _this2 = this;
 
       axios.get('/api/chess/' + this.id + '/moves').then(function (response) {
-        _this3.board.setMoves(response.data);
+        _this2.board.setMoves(response.data);
       });
     },
 
@@ -47253,10 +47232,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
      * Loads the logged used from the storage.
      */
     loadUser: function loadUser() {
-      var _this4 = this;
+      var _this3 = this;
 
       axios.get('/api/user').then(function (response) {
-        return _this4.user = response.data;
+        return _this3.user = response.data;
       });
     }
   }
@@ -48038,7 +48017,7 @@ var render = function() {
                       _vm.selected = val
                     },
                     move: function(val) {
-                      _vm.move(val)
+                      _vm.validateAndBuildMove(val)
                     }
                   }
                 })
@@ -48086,29 +48065,14 @@ if (false) {
 
 /***/ }),
 /* 60 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 61 */,
-/* 62 */,
-/* 63 */,
-/* 64 */,
-/* 65 */,
-/* 66 */,
-/* 67 */,
-/* 68 */,
-/* 69 */,
-/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(71)
+var __vue_script__ = __webpack_require__(61)
 /* template */
-var __vue_template__ = __webpack_require__(72)
+var __vue_template__ = __webpack_require__(62)
 /* styles */
 var __vue_styles__ = null
 /* scopeId */
@@ -48146,7 +48110,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 71 */
+/* 61 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48208,7 +48172,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 72 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -48259,6 +48223,145 @@ if (false) {
      require("vue-hot-reload-api").rerender("data-v-18ff29ca", module.exports)
   }
 }
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 64 */,
+/* 65 */,
+/* 66 */,
+/* 67 */,
+/* 68 */,
+/* 69 */,
+/* 70 */,
+/* 71 */,
+/* 72 */,
+/* 73 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony default export */ var _unused_webpack_default_export = ({
+  methods: {
+    /**
+     * Join the presence channel and listen for events:
+     *  1. Player joined the room event
+     *  2. Players have been assigned sides event
+     *  3. Player has made a move event
+     */
+    init: function init() {
+      var _this = this;
+
+      Echo.join('game.' + this.id).joining(function (user) {
+        _this.joinRoom(user);
+      })
+      // .leaving((user) => { TODO
+      //   this.leaveRoom(user)
+      // })
+      .listen('PlayerJoined', function (data) {
+        _this.hideLoading();
+
+        _this.determineRoles(data.game);
+
+        _this.checkMoveOrder(data.game);
+      }).listen('MoveMade', function (data) {
+        _this.board.setMoves(data.game.moves);
+
+        _this.checkMoveOrder(data.game);
+
+        _this.resetRollback();
+      });
+    },
+
+
+    /**
+     * Assigns the second player to the game as black or add a spectator.
+     */
+    joinRoom: function joinRoom(user) {
+      axios.post('/api/games/' + this.id + '/joinRoom', { user: user });
+    }
+  }
+});
+
+/***/ }),
+/* 74 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+  methods: {
+    init: function init() {
+      var _this = this;
+
+      Echo.join('game.' + this.id).here(function () {
+        _this.assignAI();
+      }).listen('AIAssigned', function (data) {
+        _this.hideLoading();
+
+        _this.determineRoles(data.game);
+
+        _this.checkMoveOrder(data.game);
+
+        _this.attemptAIMove();
+      }).listen('MoveMade', function (data) {
+        _this.board.setMoves(data.game.moves);
+
+        _this.checkMoveOrder(data.game);
+
+        _this.resetRollback();
+
+        _this.attemptAIMove();
+      });
+    },
+    assignAI: function assignAI() {
+      axios.post('/api/games/' + this.id + '/assignAI');
+    },
+    AIToMove: function AIToMove() {
+      return this.isMyMove === false;
+    },
+    attemptAIMove: function attemptAIMove() {
+      if (this.AIToMove()) {
+        var move = this.AI.think(this.board);
+
+        this.move(move);
+      }
+    }
+  }
+});
+
+/***/ }),
+/* 75 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Core = function () {
+  function Core() {
+    _classCallCheck(this, Core);
+  }
+
+  _createClass(Core, [{
+    key: "think",
+    value: function think(board) {
+      console.log(board.getPieces());
+
+      return {
+        from: 11,
+        to: 22
+      };
+    }
+  }]);
+
+  return Core;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (Core);
 
 /***/ })
 /******/ ]);

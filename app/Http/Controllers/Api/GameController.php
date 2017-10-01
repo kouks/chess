@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\AIAssigned;
 use MongoDB\BSON\ObjectID;
 use App\Events\PlayerJoined;
 use Illuminate\Http\Request;
@@ -51,6 +52,30 @@ class GameController extends Controller
         event(new PlayerJoined($this->getGameById($gameId)));
 
         return response('Player joined.', 202);
+    }
+
+    /**
+     * Assings a second player to the game.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $gameId
+     * @return \Illuminate\Http\Response
+     */
+    public function assignAI(Request $request, $gameId)
+    {
+        $game = $this->getGameById($gameId);
+
+        if (! $this->alreadyInRoom('ai', $game)) {
+            mongo()->games->updateOne([
+                '_id' => new ObjectID($gameId),
+            ], [
+                '$set' => ['black' => 'ai' ],
+            ]);
+        }
+
+        event(new AIAssigned($this->getGameById($gameId)));
+
+        return response('AI Assigned', 202);
     }
 
     /**
